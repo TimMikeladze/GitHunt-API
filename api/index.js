@@ -45,6 +45,8 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(express.static('dist'));
+
 app.get('/login/github',
   passport.authenticate('github'));
 
@@ -57,9 +59,10 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql',
-}));
+const executableSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+});
 
 app.use('/graphql', apolloExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -89,12 +92,7 @@ app.use('/graphql', apolloExpress((req) => {
   });
 
   return {
-    graphiql: true,
-    pretty: true,
-    schema: makeExecutableSchema({
-      typeDefs: schema,
-      resolvers,
-    }),
+    schema: executableSchema,
     context: {
       user,
       Repositories: new Repositories({ connector: gitHubConnector }),
@@ -105,8 +103,12 @@ app.use('/graphql', apolloExpress((req) => {
   };
 }));
 
+app.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql',
+}));
+
 app.listen(PORT, () => console.log( // eslint-disable-line no-console
-  `Server is now running on http://localhost:${PORT}`
+  `API Server is now running on http://localhost:${PORT}`
 ));
 
 const gitHubStrategyOptions = {
