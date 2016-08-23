@@ -12,11 +12,11 @@ Demonstrates:
 
 Please submit a pull request if you see anything that can be improved!
 
-## Running the app
+## Running the server
 
 ### 1. Install Node/npm
 
-Make sure you have Node.js installed (the app has been tested with Node `4.4.5` and `5.3.0`)
+Make sure you have Node.js 4 or newer installed.
 
 ### 2. Clone and install dependencies
 
