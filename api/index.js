@@ -1,7 +1,8 @@
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import { apolloServer } from 'apollo-server';
+import { apolloExpress, graphiqlExpress } from 'apollo-server';
+import { makeExecutableSchema } from 'graphql-tools';
 import { Strategy as GitHubStrategy } from 'passport-github';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
@@ -56,7 +57,11 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.use('/graphql', apolloServer((req) => {
+app.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql',
+}));
+
+app.use('/graphql', apolloExpress((req) => {
   // Get the query, the same way express-graphql does it
   // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
   const query = req.query.query || req.body.query;
@@ -86,8 +91,10 @@ app.use('/graphql', apolloServer((req) => {
   return {
     graphiql: true,
     pretty: true,
-    resolvers,
-    schema,
+    schema: makeExecutableSchema({
+      typeDefs: schema,
+      resolvers,
+    }),
     context: {
       user,
       Repositories: new Repositories({ connector: gitHubConnector }),
