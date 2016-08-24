@@ -62,6 +62,7 @@ app.get('/logout', (req, res) => {
 const executableSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
+  allowUndefinedInResolve: true,
 });
 
 app.use('/graphql', apolloExpress((req) => {
