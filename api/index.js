@@ -22,7 +22,7 @@ dotenv.config({ silent: true });
 let PORT = 3010;
 
 if (process.env.PORT) {
-  PORT = parseInt(process.env.PORT, 10) + 100;
+  PORT = process.env.PORT;
 }
 
 const {
