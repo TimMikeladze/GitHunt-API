@@ -3,7 +3,7 @@
 The Apollo Server backend shared by all Apollo client example apps.
 
 [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
-[![Build Status](https://travis-ci.org/apollostack/GitHunt-server.svg?branch=master)](https://travis-ci.org/apollostack/GitHunt-server)
+[![Build Status](https://travis-ci.org/apollostack/GitHunt-API.svg?branch=master)](https://travis-ci.org/apollostack/GitHunt-API)
 
 Demonstrates:
 
