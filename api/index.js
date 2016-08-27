@@ -7,6 +7,8 @@ import { Strategy as GitHubStrategy } from 'passport-github';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import knex from './sql/connector';
+import apolloAccounts from 'apollo-accounts-server';
+import Accounts from 'apollo-accounts-knexjs';
 
 const KnexSessionStore = require('connect-session-knex')(session);
 const store = new KnexSessionStore({
@@ -32,32 +34,10 @@ const {
 
 const app = express();
 
-app.use(session({
-  secret: 'your secret',
-  resave: true,
-  saveUninitialized: true,
-  store,
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static('dist'));
-
-app.get('/login/github',
-  passport.authenticate('github'));
-
-app.get('/login/github/callback',
-  passport.authenticate('github', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/'));
-
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
 
 const executableSchema = makeExecutableSchema({
   typeDefs: schema,
@@ -110,16 +90,3 @@ app.use('/graphiql', graphiqlExpress({
 app.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`
 ));
-
-const gitHubStrategyOptions = {
-  clientID: GITHUB_CLIENT_ID,
-  clientSecret: GITHUB_CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/login/github/callback',
-};
-
-passport.use(new GitHubStrategy(gitHubStrategyOptions, (accessToken, refreshToken, profile, cb) => {
-  cb(null, profile);
-}));
-
-passport.serializeUser((user, cb) => cb(null, user));
-passport.deserializeUser((obj, cb) => cb(null, obj));
