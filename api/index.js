@@ -1,19 +1,11 @@
 import express from 'express';
-import session from 'express-session';
-import passport from 'passport';
 import { apolloExpress, graphiqlExpress } from 'apollo-server';
 import { makeExecutableSchema } from 'graphql-tools';
-import { Strategy as GitHubStrategy } from 'passport-github';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import knex from './sql/connector';
-import apolloAccounts from 'apollo-accounts-server';
+import { accountsExpress } from 'apollo-accounts-server';
 import Accounts from 'apollo-accounts-knexjs';
-
-const KnexSessionStore = require('connect-session-knex')(session);
-const store = new KnexSessionStore({
-  knex,
-});
 
 import { schema, resolvers } from './schema';
 import { GitHubConnector } from './github/connector';
@@ -43,6 +35,20 @@ const executableSchema = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
 });
+
+const accountsConfig = {
+  server: {
+    secret: 'terrible secret',
+  },
+  github: {
+    key: GITHUB_CLIENT_ID,
+    secret: GITHUB_CLIENT_SECRET,
+  },
+};
+
+const accounts = new Accounts(accountsConfig, knex);
+
+app.use(accountsExpress(accounts));
 
 app.use('/graphql', apolloExpress((req) => {
   // Get the query, the same way express-graphql does it
