@@ -21,7 +21,7 @@ Make sure you have Node.js 4 or newer installed.
 ### 2. Clone and install dependencies
 
 ```
-git clone https://github.com/apollostack/GitHunt.git
+git clone https://github.com/apollostack/GitHunt-API.git
 cd GitHunt
 npm install
 ```
