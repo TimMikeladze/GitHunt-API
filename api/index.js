@@ -59,7 +59,6 @@ app.use('/graphql', apolloExpress((req) => {
     // Probably indicates someone trying to send an overly expensive query
     throw new Error('Query too large.');
   }
-
   let user;
   if (req.user) {
     // We get req.user from passport-github with some pretty oddly named fields,
@@ -80,6 +79,7 @@ app.use('/graphql', apolloExpress((req) => {
   return {
     schema: executableSchema,
     context: {
+      accounts,
       user,
       Repositories: new Repositories({ connector: gitHubConnector }),
       Users: new Users({ connector: gitHubConnector }),
