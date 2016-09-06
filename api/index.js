@@ -1,64 +1,31 @@
 import path from 'path';
 import express from 'express';
-import session from 'express-session';
-import passport from 'passport';
 import { apolloExpress, graphiqlExpress } from 'apollo-server';
 import { makeExecutableSchema } from 'graphql-tools';
-import { Strategy as GitHubStrategy } from 'passport-github';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import knex from './sql/connector';
 
-const KnexSessionStore = require('connect-session-knex')(session);
-const store = new KnexSessionStore({
-  knex,
-});
-
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+} from './githubKeys';
+import { setUpGitHubLogin } from './githubLogin';
 import { schema, resolvers } from './schema';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
 
-dotenv.config({ silent: true });
 let PORT = 3010;
 
 if (process.env.PORT) {
   PORT = parseInt(process.env.PORT, 10) + 100;
 }
 
-const {
-  GITHUB_CLIENT_ID,
-  GITHUB_CLIENT_SECRET,
-} = process.env;
-
 const app = express();
-
-app.use(session({
-  secret: 'your secret',
-  resave: true,
-  saveUninitialized: true,
-  store,
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static('dist'));
-
-app.get('/login/github',
-  passport.authenticate('github'));
-
-app.get('/login/github/callback',
-  passport.authenticate('github', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/'));
-
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.redirect('/');
-});
+setUpGitHubLogin(app);
 
 const executableSchema = makeExecutableSchema({
   typeDefs: schema,
@@ -115,16 +82,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`
 ));
-
-const gitHubStrategyOptions = {
-  clientID: GITHUB_CLIENT_ID,
-  clientSecret: GITHUB_CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/login/github/callback',
-};
-
-passport.use(new GitHubStrategy(gitHubStrategyOptions, (accessToken, refreshToken, profile, cb) => {
-  cb(null, profile);
-}));
-
-passport.serializeUser((user, cb) => cb(null, user));
-passport.deserializeUser((obj, cb) => cb(null, obj));
