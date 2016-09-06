@@ -50,20 +50,20 @@ schema {
 
 const rootResolvers = {
   Query: {
-    feed(_, { type, offset, limit }, context) {
+    feed(root, { type, offset, limit }, context) {
       const protectedLimit = (limit < 1 || limit > 10) ? 10 : limit;
 
       return context.Entries.getForFeed(type, offset, protectedLimit);
     },
-    entry(_, { repoFullName }, context) {
+    entry(root, { repoFullName }, context) {
       return context.Entries.getByRepoFullName(repoFullName);
     },
-    currentUser(_, __, context) {
+    currentUser(root, args, context) {
       return context.user || null;
     },
   },
   Mutation: {
-    submitRepository(_, { repoFullName }, context) {
+    submitRepository(root, { repoFullName }, context) {
       if (! context.user) {
         throw new Error('Must be logged in to submit a repository.');
       }
@@ -80,7 +80,7 @@ const rootResolvers = {
         ))
         .then(() => context.Entries.getByRepoFullName(repoFullName));
     },
-    submitComment(_, { repoFullName, commentContent }, context) {
+    submitComment(root, { repoFullName, commentContent }, context) {
       if (!context.user) {
         throw new Error('Must be logged in to submit a comment.');
       }
@@ -97,7 +97,7 @@ const rootResolvers = {
         ));
     },
 
-    vote(_, { repoFullName, type }, context) {
+    vote(root, { repoFullName, type }, context) {
       if (! context.user) {
         throw new Error('Must be logged in to vote.');
       }
@@ -119,6 +119,8 @@ const rootResolvers = {
   },
 };
 
+// Put schema together into one array of schema strings
+// and one map of resolvers, like makeExecutableSchema expects
 const schema = [...rootSchema, ...gitHubSchema, ...sqlSchema];
 const resolvers = merge(rootResolvers, gitHubResolvers, sqlResolvers);
 
