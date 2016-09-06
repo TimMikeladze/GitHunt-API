@@ -1,6 +1,6 @@
-exports.up = function(knex, Promise) {
+export function up(knex, Promise) {
   return Promise.all([
-    knex.schema.createTable('comments', function (table) {
+    knex.schema.createTable('comments', (table) => {
       table.increments();
       table.timestamps();
       table.string('posted_by');
@@ -8,14 +8,14 @@ exports.up = function(knex, Promise) {
       table.string('repository_name');
     }),
 
-    knex.schema.createTable('entries', function (table) {
+    knex.schema.createTable('entries', (table) => {
       table.increments();
       table.timestamps();
       table.string('repository_name').unique();
       table.string('posted_by');
     }),
 
-    knex.schema.createTable('votes', function (table) {
+    knex.schema.createTable('votes', (table) => {
       table.increments();
       table.timestamps();
       table.integer('entry_id');
@@ -24,12 +24,12 @@ exports.up = function(knex, Promise) {
       table.unique(['entry_id', 'username']);
     }),
   ]);
-};
+}
 
-exports.down = function(knex, Promise) {
+export function down(knex, Promise) {
   return Promise.all([
     knex.schema.dropTable('comments'),
     knex.schema.dropTable('entries'),
     knex.schema.dropTable('votes'),
   ]);
-};
+}
