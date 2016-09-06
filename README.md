@@ -47,6 +47,7 @@ Please submit a pull request if you see anything that can be improved!
   Or you can use `dotenv`, to do this `cp .env.default .env` and edit with your Github keys.
 
 6. **Run the app.**
+
   ```
   npm start
   ```
