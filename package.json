@@ -1,8 +1,7 @@
 {
-  "name": "githunt",
+  "name": "githunt-api",
   "version": "1.0.0",
   "description": "Example app for Apollo",
-  "main": "index.js",
   "scripts": {
     "start": "nodemon api/index.js --watch api --exec babel-node",
     "lint": "eslint api",
@@ -10,6 +9,7 @@
     "seed": "knex seed:run",
     "migrate": "knex migrate:latest"
   },
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollostack/GitHunt.git"
