@@ -17,16 +17,20 @@ Please submit a pull request if you see anything that can be improved!
 1. **Install Node/npm.** Make sure you have Node.js 4 or newer installed.
 2. **Clone and install dependencies.**
   Run the following commands:
+
   ```
   git clone https://github.com/apollostack/GitHunt-API.git
   cd GitHunt
   npm install
   ```
+  
 3. **Run migrations.** Set up the SQLite database and run migrations/seed data with the following commands:
+
   ```
   npm run migrate
   npm run seed
   ```
+
 4. **Get GitHub API keys.** The app will run without this, but you won't be able to log in.
   1. Go to [OAuth applications > Developer applications](https://github.com/settings/developers) in GitHub settings
   2. Click 'Register a new application' button
