@@ -16,7 +16,6 @@ import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
 
 let PORT = 3010;
-
 if (process.env.PORT) {
   PORT = parseInt(process.env.PORT, 10) + 100;
 }
@@ -76,6 +75,7 @@ app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
 }));
 
+// Serve our helpful static landing page. Not used in production.
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
