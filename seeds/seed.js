@@ -61,11 +61,6 @@ const repos = [
 
 const repoIds = {};
 
-const usenames = [
-  'stubailo',
-  'helfer',
-];
-
 const votes = {
   [repos[0].repository_name]: {
     stubailo: 1,
