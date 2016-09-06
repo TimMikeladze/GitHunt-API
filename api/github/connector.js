@@ -39,8 +39,6 @@ export class GitHubConnector {
       };
     }
 
-    // TODO: pass GitHub API key
-
     return Promise.all(urls.map((url) => {
       const cachedRes = eTagCache[url];
 
