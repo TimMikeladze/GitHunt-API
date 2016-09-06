@@ -1,24 +1,27 @@
 import knex from './connector';
 
+// A utility function that makes sure we always query the same columns
 function addSelectToEntryQuery(query) {
   query.select('entries.*', knex.raw('SUM(votes.vote_value) as score'))
     .leftJoin('votes', 'entries.id', 'votes.entry_id')
     .groupBy('entries.id');
 }
 
-function convertNullColsToZero({ score, ...rest }) {
+// If we don't have a score, it is NULL by default
+// Convert it to 0 on read.
+function handleNullScoreInRow({ score, ...rest }) {
   return {
     score: score || 0,
     ...rest,
   };
 }
 
-function mapNullColsToZero(query) {
+function convertNullScoresToZero(query) {
   return query.then((rows) => {
     if (rows.map) {
-      return rows.map(convertNullColsToZero);
+      return rows.map(handleNullScoreInRow);
     }
-    return convertNullColsToZero(rows);
+    return handleNullScoreInRow(rows);
   });
 }
 
@@ -78,7 +81,7 @@ export class Entries {
 
     query.limit(limit);
 
-    return mapNullColsToZero(query);
+    return convertNullScoresToZero(query);
   }
 
   getByRepoFullName(name) {
@@ -90,7 +93,7 @@ export class Entries {
       })
       .first();
 
-    return mapNullColsToZero(query);
+    return convertNullScoresToZero(query);
   }
 
   voteForEntry(repoFullName, voteValue, username) {

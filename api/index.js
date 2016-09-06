@@ -13,7 +13,7 @@ import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
 
-import executableSchema from './schema';
+import schema from './schema';
 
 let PORT = 3010;
 if (process.env.PORT) {
@@ -49,13 +49,15 @@ app.use('/graphql', apolloExpress((req) => {
     };
   }
 
+  // Initialize a new GitHub connector instance for every GraphQL request, so that API fetches
+  // are deduplicated per-request only.
   const gitHubConnector = new GitHubConnector({
     clientId: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
   });
 
   return {
-    schema: executableSchema,
+    schema,
     context: {
       user,
       Repositories: new Repositories({ connector: gitHubConnector }),
