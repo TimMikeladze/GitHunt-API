@@ -14,59 +14,33 @@ Please submit a pull request if you see anything that can be improved!
 
 ## Running the server
 
-### 1. Install Node/npm
+1. **Install Node/npm.** Make sure you have Node.js 4 or newer installed.
+2. **Clone and install dependencies.**
+  ```
+  git clone https://github.com/apollostack/GitHunt-API.git
+  cd GitHunt
+  npm install
+  ```
+3. **Run migrations.** Set up the SQLite database and run migrations/seed data with the following commands:
+  ```
+  npm run migrate
+  npm run seed
+  ```
+4. **Get GitHub API keys.** The app will run without this, but you won't be able to log in.
+  1. Go to [OAuth applications > Developer applications](https://github.com/settings/developers) in GitHub settings
+  2. Click 'Register a new application' button
+  3. Register your application like below
+  4. Click 'Register application' button at the bottom. [It should look like this screenshot of the app setup page.](screenshots/github-oath-setup.png)
+  5. On the following page, grab the **Client ID** and **Client Secret**, as indicated in [this screenshot of the GitHub OAuth keys page.](screenshots/github-oauth-keys.png)
+5. **Add Environment Variables.** Set your Client ID and Client Secret Environment variables in the terminal like this:
+  ```
+  export GITHUB_CLIENT_ID="your Client ID"
+  export GITHUB_CLIENT_SECRET="your Client Secret"
+  ```
 
-Make sure you have Node.js 4 or newer installed.
-
-### 2. Clone and install dependencies
-
-```
-git clone https://github.com/apollostack/GitHunt-API.git
-cd GitHunt
-npm install
-```
-
-### 3. Run Migrations
-
-Set up the SQLite database and run migrations/seed data with the following commands:
-
-```
-npm run migrate
-npm run seed
-```
-
-### 4. Get GitHub API keys
-
-- Go to [OAuth applications > Developer applications](https://github.com/settings/developers) in GitHub settings
-- Click 'Register a new application' button
-- Register your application like below
-- Click 'Register application' button
-
-[A screenshot of the app setup page.](screenshots/github-oath-setup.png)
-
-On the following page, grab:
-
-- Client ID
-- Client Secret
-
-[A screenshot of the GitHub OAuth keys page.](screenshots/github-oauth-keys.png)
-
-### 5. Add Environment Variables
-Set your Client ID and Client Secret Environment variables:
-
-```
-export GITHUB_CLIENT_ID="your Client ID"
-export GITHUB_CLIENT_SECRET="your Client Secret"
-```
-
-Or you can use `dotenv`.
-
-`cp .env.default .env` and edit with your Github keys.
-
-### 6. Run the app
-
-```
-npm start
-```
-
-- Open graphiql at http://localhost:3010/graphiql
+  Or you can use `dotenv`, to do this `cp .env.default .env` and edit with your Github keys.
+6. **Run the app.**
+  ```
+  npm start
+  ```
+7. **Try some queries.** Open graphiql at http://localhost:3010/graphiql to run some queries on your server!
