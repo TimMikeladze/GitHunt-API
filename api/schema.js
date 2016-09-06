@@ -51,6 +51,7 @@ schema {
 const rootResolvers = {
   Query: {
     feed(root, { type, offset, limit }, context) {
+      // Ensure API consumer can only fetch 10 items at most
       const protectedLimit = (limit < 1 || limit > 10) ? 10 : limit;
 
       return context.Entries.getForFeed(type, offset, protectedLimit);
@@ -80,6 +81,7 @@ const rootResolvers = {
         ))
         .then(() => context.Entries.getByRepoFullName(repoFullName));
     },
+
     submitComment(root, { repoFullName, commentContent }, context) {
       if (!context.user) {
         throw new Error('Must be logged in to submit a comment.');
