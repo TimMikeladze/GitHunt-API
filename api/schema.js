@@ -5,25 +5,42 @@ import { makeExecutableSchema } from 'graphql-tools';
 
 const rootSchema = [`
 
-# To select the sort order of the feed
+# A list of options for the sort order of the feed
 enum FeedType {
+  # Sort by a combination of freshness and score, using Reddit's algorithm
   HOT
+
+  # Newest entries first
   NEW
+
+  # Highest score entries first
   TOP
 }
 
 type Query {
-  # For the home page, the offset arg is optional to get a new page of the feed
-  feed(type: FeedType!, offset: Int, limit: Int): [Entry]
+  # A feed of repository submissions
+  feed(
+    # The sort order for the feed
+    type: FeedType!,
 
-  # For the entry page
-  entry(repoFullName: String!): Entry
+    # The number of items to skip, for pagination
+    offset: Int,
 
-  # To display the current user on the submission page, and the navbar
+    # The number of items to fetch starting from the offset, for pagination
+    limit: Int
+  ): [Entry]
+
+  # A single entry
+  entry(
+    # The full repository name from GitHub, e.g. "apollostack/GitHunt-API"
+    repoFullName: String!
+  ): Entry
+
+  # Return the currently logged in user, or null if nobody is logged in
   currentUser: User
 }
 
-# Type of vote
+# The type of vote to record, when submitting a vote
 enum VoteType {
   UP
   DOWN
@@ -31,14 +48,29 @@ enum VoteType {
 }
 
 type Mutation {
-  # Submit a new repository
-  submitRepository(repoFullName: String!): Entry
+  # Submit a new repository, returns the new submission
+  submitRepository(
+    # The full repository name from GitHub, e.g. "apollostack/GitHunt-API"
+    repoFullName: String!
+  ): Entry
 
-  # Vote on a repository
-  vote(repoFullName: String!, type: VoteType!): Entry
+  # Vote on a repository submission, returns the submission that was voted on
+  vote(
+    # The full repository name from GitHub, e.g. "apollostack/GitHunt-API"
+    repoFullName: String!,
 
-  # Comment on a repository
-  submitComment(repoFullName: String!, commentContent: String!): Comment
+    # The type of vote - UP, DOWN, or CANCEL
+    type: VoteType!
+  ): Entry
+
+  # Comment on a repository, returns the new comment
+  submitComment(
+    # The full repository name from GitHub, e.g. "apollostack/GitHunt-API"
+    repoFullName: String!,
+
+    # The text content for the new comment
+    commentContent: String!
+  ): Comment
 }
 
 schema {
