@@ -42,14 +42,14 @@ npm run seed
 - Register your application like below
 - Click 'Register application' button
 
-![Github OAuth](screenshots/github-oath-setup.png)
+[A screenshot of the app setup page.](screenshots/github-oath-setup.png)
 
 On the following page, grab:
 
 - Client ID
 - Client Secret
 
-![OAuth Key](screenshots/github-oauth-keys.png)
+[A screenshot of the GitHub OAuth keys page.](screenshots/github-oauth-keys.png)
 
 ### 5. Add Environment Variables
 Set your Client ID and Client Secret Environment variables:
