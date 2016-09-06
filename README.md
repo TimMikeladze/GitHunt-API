@@ -52,4 +52,4 @@ Please submit a pull request if you see anything that can be improved!
   npm start
   ```
 
-7. **Try some queries.** Open graphiql at http://localhost:3010/graphiql to run some queries on your server!
+7. **Open the app.** Open http://localhost:3010/ to see what to do next.
