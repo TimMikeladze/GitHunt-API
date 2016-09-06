@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
@@ -106,6 +107,10 @@ app.use('/graphql', apolloExpress((req) => {
 app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
 }));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`

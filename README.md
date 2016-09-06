@@ -31,7 +31,7 @@ Please submit a pull request if you see anything that can be improved!
   npm run seed
   ```
 
-4. **Get GitHub API keys.** The app will run without this, but you won't be able to log in.
+4. **Get GitHub API keys.**
   1. Go to [OAuth applications > Developer applications](https://github.com/settings/developers) in GitHub settings
   2. Click 'Register a new application' button
   3. Register your application like below
