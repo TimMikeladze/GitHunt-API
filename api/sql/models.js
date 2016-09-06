@@ -16,7 +16,8 @@ function handleNullScoreInRow({ score, ...rest }) {
   };
 }
 
-function convertNullScoresToZero(query) {
+// Given a Knex query promise, resolve it and then format one or more rows
+function formatRows(query) {
   return query.then((rows) => {
     if (rows.map) {
       return rows.map(handleNullScoreInRow);
@@ -31,6 +32,7 @@ export class Comments {
       .where({ id });
     return query.then(([row]) => row);
   }
+
   getCommentsByRepoName(name) {
     const query = knex('comments')
       .where({ repository_name: name })
@@ -39,6 +41,7 @@ export class Comments {
       rows || []
     ));
   }
+
   getCommentCount(name) {
     const query = knex('comments')
       .where({ repository_name: name })
@@ -49,6 +52,7 @@ export class Comments {
       ))
     ));
   }
+
   submitComment(repoFullName, username, content) {
     return knex.transaction((trx) => (
       trx('comments')
@@ -62,7 +66,6 @@ export class Comments {
   }
 }
 export class Entries {
-
   getForFeed(type, offset, limit) {
     const query = knex('entries')
       .modify(addSelectToEntryQuery);
@@ -81,7 +84,7 @@ export class Entries {
 
     query.limit(limit);
 
-    return convertNullScoresToZero(query);
+    return formatRows(query);
   }
 
   getByRepoFullName(name) {
@@ -93,7 +96,7 @@ export class Entries {
       })
       .first();
 
-    return convertNullScoresToZero(query);
+    return formatRows(query);
   }
 
   voteForEntry(repoFullName, voteValue, username) {
