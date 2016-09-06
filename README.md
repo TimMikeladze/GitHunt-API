@@ -23,7 +23,7 @@ Please submit a pull request if you see anything that can be improved!
   cd GitHunt
   npm install
   ```
-  
+
 3. **Run migrations.** Set up the SQLite database and run migrations/seed data with the following commands:
 
   ```
@@ -37,6 +37,7 @@ Please submit a pull request if you see anything that can be improved!
   3. Register your application like below
   4. Click 'Register application' button at the bottom. [It should look like this screenshot of the app setup page.](screenshots/github-oath-setup.png)
   5. On the following page, grab the **Client ID** and **Client Secret**, as indicated in [this screenshot of the GitHub OAuth keys page.](screenshots/github-oauth-keys.png)
+
 5. **Add Environment Variables.** Set your Client ID and Client Secret Environment variables in the terminal like this:
   ```
   export GITHUB_CLIENT_ID="your Client ID"
@@ -44,8 +45,10 @@ Please submit a pull request if you see anything that can be improved!
   ```
 
   Or you can use `dotenv`, to do this `cp .env.default .env` and edit with your Github keys.
+
 6. **Run the app.**
   ```
   npm start
   ```
+
 7. **Try some queries.** Open graphiql at http://localhost:3010/graphiql to run some queries on your server!
