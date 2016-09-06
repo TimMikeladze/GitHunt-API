@@ -1,6 +1,8 @@
 import { property, constant } from 'lodash';
 
 export const schema = [`
+
+# A comment about an entry, submitted by a user
 type Comment {
   postedBy: User!
   createdAt: Float! # Actually a date
@@ -22,6 +24,7 @@ type Entry {
   id: Int!
   vote: Vote!
 }
+
 `];
 
 export const resolvers = {
@@ -44,6 +47,7 @@ export const resolvers = {
       return context.Entries.haveVotedForEntry(repository_name, context.user.login);
     },
   },
+
   Comment: {
     createdAt: property('created_at'),
     postedBy({ posted_by }, _, context) {
