@@ -1,7 +1,6 @@
 import path from 'path';
 import express from 'express';
 import { apolloExpress, graphiqlExpress } from 'apollo-server';
-import { makeExecutableSchema } from 'graphql-tools';
 import bodyParser from 'body-parser';
 
 import {
@@ -10,10 +9,11 @@ import {
 } from './githubKeys';
 
 import { setUpGitHubLogin } from './githubLogin';
-import { schema, resolvers } from './schema';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
+
+import executableSchema from './schema';
 
 let PORT = 3010;
 if (process.env.PORT) {
@@ -26,11 +26,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 setUpGitHubLogin(app);
-
-const executableSchema = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers,
-});
 
 app.use('/graphql', apolloExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -73,6 +68,17 @@ app.use('/graphql', apolloExpress((req) => {
 
 app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
+  query: `{
+  feed (type: NEW, limit: 5) {
+    repository {
+      owner { login }
+      name
+    }
+
+    postedBy { login }
+  }
+}
+`,
 }));
 
 // Serve our helpful static landing page. Not used in production.

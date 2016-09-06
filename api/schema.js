@@ -1,8 +1,10 @@
 import { merge } from 'lodash';
 import { schema as gitHubSchema, resolvers as gitHubResolvers } from './github/schema';
 import { schema as sqlSchema, resolvers as sqlResolvers } from './sql/schema';
+import { makeExecutableSchema } from 'graphql-tools';
 
 const rootSchema = [`
+
 # To select the sort order of the feed
 enum FeedType {
   HOT
@@ -43,6 +45,7 @@ schema {
   query: Query
   mutation: Mutation
 }
+
 `];
 
 const rootResolvers = {
@@ -116,5 +119,12 @@ const rootResolvers = {
   },
 };
 
-export const schema = [...rootSchema, ...gitHubSchema, ...sqlSchema];
-export const resolvers = merge(rootResolvers, gitHubResolvers, sqlResolvers);
+const schema = [...rootSchema, ...gitHubSchema, ...sqlSchema];
+const resolvers = merge(rootResolvers, gitHubResolvers, sqlResolvers);
+
+const executableSchema = makeExecutableSchema({
+  typeDefs: schema,
+  resolvers,
+});
+
+export default executableSchema;
