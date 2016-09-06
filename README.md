@@ -16,6 +16,7 @@ Please submit a pull request if you see anything that can be improved!
 
 1. **Install Node/npm.** Make sure you have Node.js 4 or newer installed.
 2. **Clone and install dependencies.**
+  Run the following commands:
   ```
   git clone https://github.com/apollostack/GitHunt-API.git
   cd GitHunt
