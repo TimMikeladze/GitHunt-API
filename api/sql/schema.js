@@ -4,6 +4,9 @@ export const schema = [`
 
 # A comment about an entry, submitted by a user
 type Comment {
+  # The SQL ID of this entry
+  id: Int!
+
   # The GitHub user who posted the comment
   postedBy: User!
 
