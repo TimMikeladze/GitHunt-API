@@ -7,9 +7,7 @@ const subscriptionManager = new SubscriptionManager({
   pubsub,
   setupFunctions: {
     commentAdded: (options, args) => ({
-      commentAdded: comment => {
-        return comment.repository_name === args.repoFullName;
-      },
+      commentAdded: comment => comment.repository_name === args.repoFullName,
     }),
   },
 });
