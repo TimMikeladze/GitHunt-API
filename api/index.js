@@ -14,7 +14,7 @@ import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
 
 import { createServer } from 'http';
-import { Server } from 'subscriptions-transport-ws';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
@@ -99,19 +99,22 @@ app.listen(PORT, () => console.log( // eslint-disable-line no-console
 ));
 
 // WebSocket server for subscriptions
-const httpServer = createServer((request, response) => {
+const websocketServer = createServer((request, response) => {
   response.writeHead(404);
   response.end();
 });
 
-httpServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
+websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
   `Websocket Server is now running on http://localhost:${WS_PORT}`
 ));
 
 // eslint-disable-next-line
-new Server(
+new SubscriptionServer(
   {
     subscriptionManager,
+
+    // the obSubscribe function is called for every new subscription
+    // and we use it to set the GraphQL context for this subscription
     onSubscribe: (msg, params) => {
       const gitHubConnector = new GitHubConnector({
         clientId: GITHUB_CLIENT_ID,
@@ -127,5 +130,5 @@ new Server(
       });
     },
   },
-  httpServer
+  websocketServer
 );
