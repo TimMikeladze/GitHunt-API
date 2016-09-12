@@ -2,6 +2,7 @@ import { merge } from 'lodash';
 import { schema as gitHubSchema, resolvers as gitHubResolvers } from './github/schema';
 import { schema as sqlSchema, resolvers as sqlResolvers } from './sql/schema';
 import { makeExecutableSchema } from 'graphql-tools';
+import { pubsub } from './subscriptions';
 
 const rootSchema = [`
 
@@ -73,9 +74,15 @@ type Mutation {
   ): Comment
 }
 
+type Subscription {
+  # Subscription fires on every comment added
+  commentAdded(repoFullName: String!): Comment
+}
+
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 `];
@@ -126,9 +133,14 @@ const rootResolvers = {
             commentContent
           )
         ))
-        .then(([id]) => (
+        .then(([id]) =>
           context.Comments.getCommentById(id)
-        ));
+        )
+        .then(comment => {
+          // publish subscription notification
+          pubsub.publish('commentAdded', comment);
+          return comment;
+        });
     },
 
     vote(root, { repoFullName, type }, context) {
@@ -149,6 +161,12 @@ const rootResolvers = {
       ).then(() => (
         context.Entries.getByRepoFullName(repoFullName)
       ));
+    },
+  },
+  Subscription: {
+    commentAdded(comment) {
+      // the subscription payload is the comment.
+      return comment;
     },
   },
 };

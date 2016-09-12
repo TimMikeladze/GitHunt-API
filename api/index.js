@@ -13,12 +13,18 @@ import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
 
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { subscriptionManager } from './subscriptions';
+
 import schema from './schema';
 
 let PORT = 3010;
 if (process.env.PORT) {
   PORT = parseInt(process.env.PORT, 10) + 100;
 }
+
+const WS_PORT = process.env.WS_PORT || 8080;
 
 const app = express();
 
@@ -91,3 +97,38 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`
 ));
+
+// WebSocket server for subscriptions
+const websocketServer = createServer((request, response) => {
+  response.writeHead(404);
+  response.end();
+});
+
+websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
+  `Websocket Server is now running on http://localhost:${WS_PORT}`
+));
+
+// eslint-disable-next-line
+new SubscriptionServer(
+  {
+    subscriptionManager,
+
+    // the obSubscribe function is called for every new subscription
+    // and we use it to set the GraphQL context for this subscription
+    onSubscribe: (msg, params) => {
+      const gitHubConnector = new GitHubConnector({
+        clientId: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+      });
+      return Object.assign({}, params, {
+        context: {
+          Repositories: new Repositories({ connector: gitHubConnector }),
+          Users: new Users({ connector: gitHubConnector }),
+          Entries: new Entries(),
+          Comments: new Comments(),
+        },
+      });
+    },
+  },
+  websocketServer
+);
