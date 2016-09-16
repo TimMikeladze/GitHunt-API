@@ -20,7 +20,7 @@ Please submit a pull request if you see anything that can be improved!
 
   ```
   git clone https://github.com/apollostack/GitHunt-API.git
-  cd GitHunt
+  cd GitHunt-API
   npm install
   ```
 
