@@ -40,7 +40,7 @@
     "nodemon": "^1.9.2"
   },
   "dependencies": {
-    "apollo-server": "^0.2.1",
+    "apollo-server": "^0.3.2",
     "body-parser": "^1.15.1",
     "connect-session-knex": "^1.0.23",
     "dataloader": "^1.2.0",
