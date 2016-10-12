@@ -28,7 +28,10 @@ type Query {
     offset: Int,
 
     # The number of items to fetch starting from the offset, for pagination
-    limit: Int
+    limit: Int,
+    
+    # The text to mach repo name for searching
+    repoName: String
   ): [Entry]
 
   # A single entry
@@ -89,11 +92,9 @@ schema {
 
 const rootResolvers = {
   Query: {
-    feed(root, { type, offset, limit }, context) {
-      // Ensure API consumer can only fetch 10 items at most
-      const protectedLimit = (limit < 1 || limit > 10) ? 10 : limit;
-
-      return context.Entries.getForFeed(type, offset, protectedLimit);
+    feed(root, { type, offset, limit, repoName }, context) {
+      const protectedLimit = (limit < 1) ? 10 : limit;
+      return context.Entries.getForFeed(type, offset, protectedLimit, repoName);
     },
     entry(root, { repoFullName }, context) {
       return context.Entries.getByRepoFullName(repoFullName);

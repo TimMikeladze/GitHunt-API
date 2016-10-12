@@ -66,7 +66,7 @@ export class Comments {
   }
 }
 export class Entries {
-  getForFeed(type, offset, limit) {
+  getForFeed(type, offset, limit, repoName) {
     const query = knex('entries')
       .modify(addSelectToEntryQuery);
 
@@ -80,6 +80,10 @@ export class Entries {
 
     if (offset > 0) {
       query.offset(offset);
+    }
+
+    if (repoName) {
+      query.where('repository_name', 'like', `%${repoName}%`)
     }
 
     query.limit(limit);
