@@ -104,7 +104,7 @@ const rootResolvers = {
   },
   Mutation: {
     submitRepository(root, { repoFullName }, context) {
-      if (! context.user) {
+      if (!context.user) {
         throw new Error('Must be logged in to submit a repository.');
       }
 
@@ -136,7 +136,7 @@ const rootResolvers = {
         .then(([id]) =>
           context.Comments.getCommentById(id)
         )
-        .then(comment => {
+        .then((comment) => {
           // publish subscription notification
           pubsub.publish('commentAdded', comment);
           return comment;
@@ -144,7 +144,7 @@ const rootResolvers = {
     },
 
     vote(root, { repoFullName, type }, context) {
-      if (! context.user) {
+      if (!context.user) {
         throw new Error('Must be logged in to vote.');
       }
 

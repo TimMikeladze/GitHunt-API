@@ -84,8 +84,8 @@ export function seed(knex, Promise) {
   .then(() => {
     return Promise.all(repos.map(({ repository_name, posted_by }, i) => {
       return knex('entries').insert({
-        created_at: Date.now() - i * 10000,
-        updated_at: Date.now() - i * 10000,
+        created_at: Date.now() - (i * 10000),
+        updated_at: Date.now() - (i * 10000),
         repository_name,
         posted_by,
       }).then(([id]) => {

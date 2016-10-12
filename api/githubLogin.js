@@ -10,6 +10,7 @@ import {
 } from './githubKeys';
 
 const KnexSessionStore = require('connect-session-knex')(session);
+
 const store = new KnexSessionStore({
   knex,
 });
