@@ -50,7 +50,7 @@
     "graphql": "0.7.2",
     "graphql-subscriptions": "0.2.0",
     "graphql-tools": "0.7.2",
-    "knex": "0.12.3",
+    "knex": "0.12.6",
     "lodash": "4.16.4",
     "passport": "0.3.2",
     "passport-github": "1.1.0",
