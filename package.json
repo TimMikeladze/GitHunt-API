@@ -40,7 +40,6 @@
     "nodemon": "1.11.0"
   },
   "dependencies": {
-    "apollo-server": "0.3.3",
     "body-parser": "1.15.2",
     "connect-session-knex": "1.2.0",
     "dataloader": "1.2.0",
@@ -48,6 +47,7 @@
     "express": "4.14.0",
     "express-session": "1.14.1",
     "graphql": "0.7.2",
+    "graphql-server-express": "^0.4.1",
     "graphql-subscriptions": "0.2.0",
     "graphql-tools": "0.7.2",
     "knex": "0.12.6",
