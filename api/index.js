@@ -1,6 +1,6 @@
 import path from 'path';
 import express from 'express';
-import { apolloExpress, graphiqlExpress } from 'apollo-server';
+import { apolloExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 
 import {
