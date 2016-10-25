@@ -1,3 +1,5 @@
+import RedditScore from 'reddit-score';
+
 import knex from './connector';
 
 // A utility function that makes sure we always query the same columns
@@ -66,6 +68,8 @@ export class Entries {
       query.orderBy('created_at', 'desc');
     } else if (type === 'TOP') {
       query.orderBy('score', 'desc');
+    } else if (type === 'HOT') {
+      query.orderBy('hot_score', 'desc');
     } else {
       throw new Error(`Feed type ${type} not implemented.`);
     }
@@ -96,7 +100,7 @@ export class Entries {
 
     return Promise.resolve()
 
-    // First, get the entry_id from repoFullName
+      // First, get the entry_id from repoFullName
       .then(() => (
         knex('entries')
           .where({
@@ -124,6 +128,57 @@ export class Entries {
             entry_id,
             username,
             vote_value: voteValue,
+          })
+      ))
+      // Update hot score
+      .then(() => this.updateHotScore(repoFullName));
+  }
+
+  updateHotScore(repoFullName) {
+    let entryId;
+    let createdAt;
+
+    return Promise.resolve()
+      .then(() => (
+        knex('entries')
+          .where({
+            repository_name: repoFullName,
+          })
+          .select(['id', 'created_at'])
+          .first()
+          .then(({ id, created_at }) => {
+            entryId = id;
+            createdAt = created_at;
+          })
+      ))
+      .then(() => {
+        return knex('votes')
+          .select(['vote_value'])
+          .where({
+            entry_id: entryId,
+          });
+      })
+      .then((results) => {
+        function countVotes(vote) {
+          return (count, value) => count + (value === vote ? 1 : 0);
+        }
+
+        if (results && results.map) {
+          const votes = results.map(vote => vote.vote_value);
+          const ups = votes.reduce(countVotes(1), 0);
+          const downs = votes.reduce(countVotes(-1), 0);
+          const date = createdAt instanceof Date ? createdAt : new Date(createdAt);
+
+          return (new RedditScore()).hot(ups, downs, date);
+        }
+
+        return 0;
+      })
+      .then(hotScore => (
+        knex('entries')
+          .where('id', entryId)
+          .update({
+            hot_score: hotScore,
           })
       ));
   }
@@ -183,6 +238,7 @@ export class Entries {
               posted_by: username,
             });
         }
-      }));
+      }))
+      .then(() => this.updateHotScore(repoFullName));
   }
 }
