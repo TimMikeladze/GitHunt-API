@@ -13,6 +13,7 @@ export function up(knex, Promise) {
       table.timestamps();
       table.string('repository_name').unique();
       table.string('posted_by');
+      table.float('hot_score');
     }),
 
     knex.schema.createTable('votes', (table) => {

@@ -1,4 +1,21 @@
 import _ from 'lodash';
+import RedditScore from 'reddit-score';
+
+function countScore(score) {
+  return (count, value) => count + (value === score ? 1 : 0);
+}
+
+function hot(repoVotes, date) {
+  const redditScore = new RedditScore();
+
+  const createdAt = date instanceof Date ? date : new Date(date);
+
+  const scores = _.values(repoVotes || {});
+  const ups = scores.reduce(countScore(1), 0);
+  const downs = scores.reduce(countScore(-1), 0);
+
+  return redditScore.hot(ups, downs, createdAt);
+}
 
 const repos = [
   {
@@ -83,11 +100,16 @@ export function seed(knex, Promise) {
   // Insert some entries for the repositories
   .then(() => {
     return Promise.all(repos.map(({ repository_name, posted_by }, i) => {
+      const createdAt = Date.now() - (i * 10000);
+      const repoVotes = votes[repository_name];
+      const hotScore = hot(repoVotes, createdAt);
+
       return knex('entries').insert({
-        created_at: Date.now() - (i * 10000),
+        created_at: createdAt,
         updated_at: Date.now() - (i * 10000),
         repository_name,
         posted_by,
+        hot_score: hotScore,
       }).then(([id]) => {
         repoIds[repository_name] = id;
       });

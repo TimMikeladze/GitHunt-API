@@ -39,6 +39,9 @@ type Entry {
   # The score of this repository, upvotes - downvotes
   score: Int!
 
+  # The hot score of this repository
+  hotScore: Int!
+
   # Comments posted about this repository
   comments: [Comment]! # Should this be paginated?
 
@@ -66,6 +69,7 @@ export const resolvers = {
       return context.Comments.getCommentsByRepoName(repository_name);
     },
     createdAt: property('created_at'),
+    hotScore: property('hot_score'),
     commentCount({ repository_name }, _, context) {
       return context.Comments.getCommentCount(repository_name) || constant(0);
     },
