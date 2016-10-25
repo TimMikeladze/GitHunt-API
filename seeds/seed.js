@@ -6,7 +6,7 @@ const repos = [
     posted_by: 'stubailo',
   },
   {
-    repository_name: 'apollostack/apollo-server',
+    repository_name: 'apollostack/graphql-server',
     posted_by: 'helfer',
   },
   {
