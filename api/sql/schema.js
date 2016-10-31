@@ -40,7 +40,7 @@ type Entry {
   score: Int!
 
   # The hot score of this repository
-  hotScore: Int!
+  hotScore: Float!
 
   # Comments posted about this repository
   comments: [Comment]! # Should this be paginated?
