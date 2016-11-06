@@ -35,10 +35,15 @@ export class Comments {
     return query.then(([row]) => row);
   }
 
-  getCommentsByRepoName(name) {
+  getCommentsByRepoName(name, limit, offset) {
     const query = knex('comments')
       .where({ repository_name: name })
       .orderBy('created_at', 'desc');
+
+    if (limit !== -1) {
+      query.limit(limit).offset(offset);
+    }
+
     return query.then(rows => (rows || []));
   }
 
