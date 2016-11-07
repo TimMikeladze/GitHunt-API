@@ -65,7 +65,7 @@ export const resolvers = {
     postedBy({ posted_by }, _, context) {
       return context.Users.getByLogin(posted_by);
     },
-    comments({ repository_name}, { limit = -1, offset = 0 }, context) {
+    comments({ repository_name }, { limit = -1, offset = 0 }, context) {
       return context.Comments.getCommentsByRepoName(repository_name, limit, offset);
     },
     createdAt: property('created_at'),
