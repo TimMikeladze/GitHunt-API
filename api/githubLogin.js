@@ -26,8 +26,6 @@ export function setUpGitHubLogin(app) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.use(express.static('dist'));
-
   app.get('/login/github',
     passport.authenticate('github'));
 
