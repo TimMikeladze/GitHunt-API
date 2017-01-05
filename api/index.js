@@ -3,6 +3,8 @@ import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 
+import { getMiddlewareForQueryMap } from 'extractgql/lib/server';
+
 import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
@@ -19,6 +21,9 @@ import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
+import queryMap from '../extracted_queries.json';
+import config from './config';
+
 let PORT = 3010;
 if (process.env.PORT) {
   PORT = parseInt(process.env.PORT, 10) + 100;
@@ -32,6 +37,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 setUpGitHubLogin(app);
+
+if (config.persistedQueries) {
+  app.use(
+    '/graphql',
+    getMiddlewareForQueryMap(queryMap)
+  );
+}
 
 app.use('/graphql', graphqlExpress((req) => {
   // Get the query, the same way express-graphql does it
