@@ -36,14 +36,14 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-setUpGitHubLogin(app);
-
 if (config.persistedQueries) {
   app.use(
     '/graphql',
     getMiddlewareForQueryMap(queryMap)
   );
 }
+
+setUpGitHubLogin(app);
 
 app.use('/graphql', graphqlExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -66,7 +66,9 @@ app.use('/graphql', graphqlExpress((req) => {
       avatar_url: req.user.photos[0].value,
     };
   }
-
+  console.log('user: ');
+  console.log(user);
+  
   // Initialize a new GitHub connector instance for every GraphQL request, so that API fetches
   // are deduplicated per-request only.
   const gitHubConnector = new GitHubConnector({
