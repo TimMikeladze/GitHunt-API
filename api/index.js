@@ -66,9 +66,7 @@ app.use('/graphql', graphqlExpress((req) => {
       avatar_url: req.user.photos[0].value,
     };
   }
-  console.log('user: ');
-  console.log(user);
-  
+
   // Initialize a new GitHub connector instance for every GraphQL request, so that API fetches
   // are deduplicated per-request only.
   const gitHubConnector = new GitHubConnector({
