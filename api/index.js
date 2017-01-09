@@ -36,12 +36,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-if (config.persistedQueries) {
-  app.use(
-    '/graphql',
-    getMiddlewareForQueryMap(queryMap)
-  );
-}
+app.use(
+  '/graphql',
+  getMiddlewareForQueryMap(queryMap, config.persistedQueries)
+);
 
 setUpGitHubLogin(app);
 
