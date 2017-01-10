@@ -1,4 +1,3 @@
-import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github';
