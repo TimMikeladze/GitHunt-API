@@ -1,4 +1,3 @@
-import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github';
@@ -25,8 +24,6 @@ export function setUpGitHubLogin(app) {
 
   app.use(passport.initialize());
   app.use(passport.session());
-
-  app.use(express.static('dist'));
 
   app.get('/login/github',
     passport.authenticate('github'));
