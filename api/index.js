@@ -39,8 +39,6 @@ app.use(bodyParser.json());
 app.use(
   '/graphql',
   (req, resp, next) => {
-    console.log('In the ghetto middleware');
-
     if (config.persistedQueries) {
       const invertedMap = invert(queryMap);
       req.body.query = invertedMap[req.body.id];
