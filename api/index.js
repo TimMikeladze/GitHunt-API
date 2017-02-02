@@ -3,7 +3,6 @@ import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
 import { invert } from 'lodash';
-import { getMiddlewareForQueryMap } from 'persistgraphql/lib/server';
 
 import {
   GITHUB_CLIENT_ID,
@@ -41,6 +40,7 @@ app.use(
   (req, resp, next) => {
     if (config.persistedQueries) {
       const invertedMap = invert(queryMap);
+      // eslint-disable-next-line no-param-reassign
       req.body.query = invertedMap[req.body.id];
     }
     next();
