@@ -2,8 +2,8 @@ import path from 'path';
 import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import bodyParser from 'body-parser';
-
-import { getMiddlewareForQueryMap } from 'extractgql/lib/server';
+import { invert } from 'lodash';
+import { getMiddlewareForQueryMap } from 'persistgraphql/lib/server';
 
 import {
   GITHUB_CLIENT_ID,
@@ -38,7 +38,15 @@ app.use(bodyParser.json());
 
 app.use(
   '/graphql',
-  getMiddlewareForQueryMap(queryMap, config.persistedQueries)
+  (req, resp, next) => {
+    console.log('In the ghetto middleware');
+
+    if (config.persistedQueries) {
+      const invertedMap = invert(queryMap);
+      req.body.query = invertedMap[req.body.id];
+    }
+    next();
+  },
 );
 
 setUpGitHubLogin(app);
