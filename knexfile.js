@@ -3,7 +3,7 @@ require('babel-register');
 
 const { parse } = require('pg-connection-string');
 
-const { PG_URL } = process.env;
+const { DATABASE_URL } = process.env;
 
 module.exports = {
   development: {
@@ -13,8 +13,8 @@ module.exports = {
     },
     useNullAsDefault: true,
   },
-  production: PG_URL && {
+  production: DATABASE_URL && {
     client: 'pg',
-    connection: Object.assign({}, parse(PG_URL), { ssl: true }),
+    connection: Object.assign({}, parse(DATABASE_URL), { ssl: true }),
   },
 };
