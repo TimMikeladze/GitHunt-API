@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Example app for Apollo",
   "scripts": {
-    "start": "babel-node api/index.js",
+    "start": "node -r babel-register api/index.js",
     "dev": "nodemon api/index.js --watch api --exec babel-node",
     "lint": "eslint api migrations seeds",
     "test": "mocha --compilers js:babel-core/register --reporter spec --full-trace 'api/**/*.test.js' && npm run lint",
@@ -25,7 +25,6 @@
     "babel-cli": "6.16.0",
     "babel-core": "6.21.0",
     "babel-eslint": "7.1.1",
-    "babel-loader": "6.2.9",
     "babel-preset-es2015": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-2": "6.17.0",
