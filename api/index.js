@@ -35,11 +35,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const invertedMap = invert(queryMap);
+
 app.use(
   '/graphql',
   (req, resp, next) => {
     if (config.persistedQueries) {
-      const invertedMap = invert(queryMap);
       // eslint-disable-next-line no-param-reassign
       req.body.query = invertedMap[req.body.id];
     }
