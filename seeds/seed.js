@@ -19,11 +19,11 @@ function hot(repoVotes, date) {
 
 const repos = [
   {
-    repository_name: 'apollostack/apollo-client',
+    repository_name: 'apollographql/apollo-client',
     posted_by: 'stubailo',
   },
   {
-    repository_name: 'apollostack/graphql-server',
+    repository_name: 'apollographql/graphql-server',
     posted_by: 'helfer',
   },
   {
