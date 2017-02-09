@@ -41,7 +41,7 @@ export function setUpGitHubLogin(app) {
 const gitHubStrategyOptions = {
   clientID: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
-  callbackURL: process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/login/github/callback' : 'http://api.githunt.com/login/github/callback',
+  callbackURL: process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/login/github/callback' : 'http://githunt-react.herokuapp.com/login/github/callback',
 };
 
 passport.use(new GitHubStrategy(gitHubStrategyOptions, (accessToken, refreshToken, profile, cb) => {
