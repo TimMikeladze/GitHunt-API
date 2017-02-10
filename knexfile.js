@@ -15,6 +15,6 @@ module.exports = {
   },
   production: DATABASE_URL && {
     client: 'pg',
-    connection: Object.assign({}, parse(DATABASE_URL), { ssl: true }),
+    connection: Object.assign({}, parse(DATABASE_URL), { ssl: false }),
   },
 };

@@ -4,7 +4,7 @@ import knex from './connector';
 
 // A utility function that makes sure we always query the same columns
 function addSelectToEntryQuery(query) {
-  query.select('entries.*', knex.raw('SUM(votes.vote_value) as score'))
+  query.select('entries.*', knex.raw('coalesce(sum(votes.vote_value), 0) as score'))
     .leftJoin('votes', 'entries.id', 'votes.entry_id')
     .groupBy('entries.id');
 }
