@@ -228,7 +228,7 @@ export class Entries {
     return knex.transaction(trx => trx('entries')
       .count()
       .where('posted_by', '=', username)
-      .where('created_at', '>', Date.now() - rateLimitMs)
+      .where('created_at', '>', new Date(Date.now() - rateLimitMs))
       .then((obj) => {
         // If the user has already submitted too many times, we don't
         // post the repo.
