@@ -58,7 +58,7 @@ export class Comments {
     return knex.transaction(trx => trx('comments')
       .insert({
         content,
-        created_at: Date.now(),
+        created_at: new Date(Date.now()),
         repository_name: repoFullName,
         posted_by: username,
       }));
@@ -237,8 +237,8 @@ export class Entries {
         } else {
           return trx('entries')
             .insert({
-              created_at: Date.now(),
-              updated_at: Date.now(),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
               repository_name: repoFullName,
               posted_by: username,
             });
