@@ -61,7 +61,8 @@ export class Comments {
         created_at: new Date(Date.now()),
         repository_name: repoFullName,
         posted_by: username,
-      }));
+      })
+      .returning(['id']));
   }
 }
 export class Entries {
