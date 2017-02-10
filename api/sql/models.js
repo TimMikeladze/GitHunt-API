@@ -62,7 +62,7 @@ export class Comments {
         repository_name: repoFullName,
         posted_by: username,
       })
-      .returning(['id']));
+      .returning('id'));
   }
 }
 export class Entries {
