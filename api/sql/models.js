@@ -51,7 +51,7 @@ export class Comments {
     const query = knex('comments')
       .where({ repository_name: name })
       .count();
-    return query.then(rows => rows.map(row => (row['count(*)'] || '0')));
+    return query.then(rows => rows.map(row => (row['count(*)'] || row.count || '0')));
   }
 
   submitComment(repoFullName, username, content) {
