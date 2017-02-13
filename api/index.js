@@ -153,6 +153,6 @@ new SubscriptionServer(
     },
   },
   {
-    server: websocketServer
+    server: websocketServer,
   }
 );
