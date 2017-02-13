@@ -152,5 +152,7 @@ new SubscriptionServer(
       });
     },
   },
-  server,
+  {
+    server: websocketServer
+  }
 );
