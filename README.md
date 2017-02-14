@@ -2,6 +2,8 @@
 
 The Apollo Server backend shared by all Apollo client example apps.
 
+Interact with the API yourself at [http://api.githunt.com/graphiql](http://api.githunt.com/graphiql).
+
 [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
 [![Build Status](https://travis-ci.org/apollographql/GitHunt-API.svg?branch=master)](https://travis-ci.org/apollographql/GitHunt-API)
 
