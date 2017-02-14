@@ -49,7 +49,7 @@ Please submit a pull request if you see anything that can be improved!
 6. **Run the app.**
 
   ```
-  npm start
+  npm run dev
   ```
 
 7. **Open the app.** Open http://localhost:3010/ to see what to do next.

@@ -100,17 +100,17 @@ export function seed(knex, Promise) {
   // Insert some entries for the repositories
   .then(() => {
     return Promise.all(repos.map(({ repository_name, posted_by }, i) => {
-      const createdAt = Date.now() - (i * 10000);
+      const createdAt = new Date(Date.now() - (i * 10000));
       const repoVotes = votes[repository_name];
       const hotScore = hot(repoVotes, createdAt);
 
       return knex('entries').insert({
         created_at: createdAt,
-        updated_at: Date.now() - (i * 10000),
+        updated_at: createdAt,
         repository_name,
         posted_by,
         hot_score: hotScore,
-      }).then(([id]) => {
+      }).returning('id').then(([id]) => {
         repoIds[repository_name] = id;
       });
     }));

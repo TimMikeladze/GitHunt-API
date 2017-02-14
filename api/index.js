@@ -25,10 +25,8 @@ import config from './config';
 
 let PORT = 3010;
 if (process.env.PORT) {
-  PORT = parseInt(process.env.PORT, 10) + 100;
+  PORT = parseInt(process.env.PORT, 10);
 }
-
-const WS_PORT = process.env.WS_PORT || 8080;
 
 const app = express();
 
@@ -111,18 +109,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => console.log( // eslint-disable-line no-console
+const server = createServer(app);
+
+server.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`
-));
-
-// WebSocket server for subscriptions
-const websocketServer = createServer((request, response) => {
-  response.writeHead(404);
-  response.end();
-});
-
-websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
-  `Websocket Server is now running on http://localhost:${WS_PORT}`
 ));
 
 // eslint-disable-next-line
@@ -147,5 +137,5 @@ new SubscriptionServer(
       });
     },
   },
-  websocketServer
+  server,
 );
