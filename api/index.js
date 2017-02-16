@@ -20,6 +20,9 @@ import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
+import OpticsAgent from 'optics-agent';
+OpticsAgent.instrumentSchema(schema);
+
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
@@ -47,6 +50,8 @@ app.use(
 );
 
 setUpGitHubLogin(app);
+
+app.use('/graphql', OpticsAgent.middleware());
 
 app.use('/graphql', graphqlExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -85,6 +90,7 @@ app.use('/graphql', graphqlExpress((req) => {
       Users: new Users({ connector: gitHubConnector }),
       Entries: new Entries(),
       Comments: new Comments(),
+      opticsContext: OpticsAgent.context(req),
     },
   };
 }));
