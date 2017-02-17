@@ -1,6 +1,7 @@
 import path from 'path';
 import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import OpticsAgent from 'optics-agent';
 import bodyParser from 'body-parser';
 import { invert } from 'lodash';
 
@@ -20,13 +21,12 @@ import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
-import OpticsAgent from 'optics-agent';
+import queryMap from '../extracted_queries.json';
+import config from './config';
+
 if (process.env.OPTICS_API_KEY) {
   OpticsAgent.instrumentSchema(schema);
 }
-
-import queryMap from '../extracted_queries.json';
-import config from './config';
 
 let PORT = 3010;
 if (process.env.PORT) {
