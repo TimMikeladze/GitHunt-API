@@ -1,6 +1,7 @@
 import path from 'path';
 import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import OpticsAgent from 'optics-agent';
 import bodyParser from 'body-parser';
 import { invert } from 'lodash';
 
@@ -22,6 +23,10 @@ import schema from './schema';
 
 import queryMap from '../extracted_queries.json';
 import config from './config';
+
+if (process.env.OPTICS_API_KEY) {
+  OpticsAgent.instrumentSchema(schema);
+}
 
 let PORT = 3010;
 if (process.env.PORT) {
@@ -47,6 +52,10 @@ app.use(
 );
 
 setUpGitHubLogin(app);
+
+if (process.env.OPTICS_API_KEY) {
+  app.use('/graphql', OpticsAgent.middleware());
+}
 
 app.use('/graphql', graphqlExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -77,6 +86,11 @@ app.use('/graphql', graphqlExpress((req) => {
     clientSecret: GITHUB_CLIENT_SECRET,
   });
 
+  let opticsContext;
+  if (process.env.OPTICS_API_KEY) {
+    opticsContext = OpticsAgent.context(req);
+  }
+
   return {
     schema,
     context: {
@@ -85,6 +99,7 @@ app.use('/graphql', graphqlExpress((req) => {
       Users: new Users({ connector: gitHubConnector }),
       Entries: new Entries(),
       Comments: new Comments(),
+      opticsContext,
     },
   };
 }));
