@@ -4,7 +4,7 @@ import knex from './connector';
 
 // A utility function that makes sure we always query the same columns
 function addSelectToEntryQuery(query) {
-  query.select('entries.*', knex.raw('SUM(votes.vote_value) as score'))
+  query.select('entries.*', knex.raw('coalesce(sum(votes.vote_value), 0) as score'))
     .leftJoin('votes', 'entries.id', 'votes.entry_id')
     .groupBy('entries.id');
 }
@@ -51,17 +51,18 @@ export class Comments {
     const query = knex('comments')
       .where({ repository_name: name })
       .count();
-    return query.then(rows => rows.map(row => (row['count(*)'] || '0')));
+    return query.then(rows => rows.map(row => (row['count(*)'] || row.count || '0')));
   }
 
   submitComment(repoFullName, username, content) {
     return knex.transaction(trx => trx('comments')
       .insert({
         content,
-        created_at: Date.now(),
+        created_at: new Date(Date.now()),
         repository_name: repoFullName,
         posted_by: username,
-      }));
+      })
+      .returning('id'));
   }
 }
 export class Entries {
@@ -227,7 +228,7 @@ export class Entries {
     return knex.transaction(trx => trx('entries')
       .count()
       .where('posted_by', '=', username)
-      .where('created_at', '>', Date.now() - rateLimitMs)
+      .where('created_at', '>', new Date(Date.now() - rateLimitMs))
       .then((obj) => {
         // If the user has already submitted too many times, we don't
         // post the repo.
@@ -237,8 +238,8 @@ export class Entries {
         } else {
           return trx('entries')
             .insert({
-              created_at: Date.now(),
-              updated_at: Date.now(),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
               repository_name: repoFullName,
               posted_by: username,
             });

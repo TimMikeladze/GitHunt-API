@@ -1,6 +1,7 @@
 import path from 'path';
 import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import OpticsAgent from 'optics-agent';
 import bodyParser from 'body-parser';
 import { invert } from 'lodash';
 
@@ -23,12 +24,14 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
-let PORT = 3010;
-if (process.env.PORT) {
-  PORT = parseInt(process.env.PORT, 10) + 100;
+if (process.env.OPTICS_API_KEY) {
+  OpticsAgent.instrumentSchema(schema);
 }
 
-const WS_PORT = process.env.WS_PORT || 8080;
+let PORT = 3010;
+if (process.env.PORT) {
+  PORT = parseInt(process.env.PORT, 10);
+}
 
 const app = express();
 
@@ -49,6 +52,10 @@ app.use(
 );
 
 setUpGitHubLogin(app);
+
+if (process.env.OPTICS_API_KEY) {
+  app.use('/graphql', OpticsAgent.middleware());
+}
 
 app.use('/graphql', graphqlExpress((req) => {
   // Get the query, the same way express-graphql does it
@@ -79,6 +86,11 @@ app.use('/graphql', graphqlExpress((req) => {
     clientSecret: GITHUB_CLIENT_SECRET,
   });
 
+  let opticsContext;
+  if (process.env.OPTICS_API_KEY) {
+    opticsContext = OpticsAgent.context(req);
+  }
+
   return {
     schema,
     context: {
@@ -87,6 +99,7 @@ app.use('/graphql', graphqlExpress((req) => {
       Users: new Users({ connector: gitHubConnector }),
       Entries: new Entries(),
       Comments: new Comments(),
+      opticsContext,
     },
   };
 }));
@@ -111,18 +124,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => console.log( // eslint-disable-line no-console
+const server = createServer(app);
+
+server.listen(PORT, () => console.log( // eslint-disable-line no-console
   `API Server is now running on http://localhost:${PORT}`
-));
-
-// WebSocket server for subscriptions
-const websocketServer = createServer((request, response) => {
-  response.writeHead(404);
-  response.end();
-});
-
-websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
-  `Websocket Server is now running on http://localhost:${WS_PORT}`
 ));
 
 // eslint-disable-next-line
@@ -148,6 +153,7 @@ new SubscriptionServer(
     },
   },
   {
-    server: websocketServer,
-  }
+    path: 'subscriptions',
+    server,
+  },
 );
