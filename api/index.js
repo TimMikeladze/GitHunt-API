@@ -33,6 +33,8 @@ if (process.env.PORT) {
   PORT = parseInt(process.env.PORT, 10);
 }
 
+const SUBSCRIPTIONS_PATH = '/subscriptions';
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -126,9 +128,11 @@ app.get('/', (req, res) => {
 
 const server = createServer(app);
 
-server.listen(PORT, () => console.log( // eslint-disable-line no-console
-  `API Server is now running on http://localhost:${PORT}`
-));
+server.listen(PORT, () => {
+  // eslint-disable-line no-console
+  console.log(`API Server is now running on http://localhost:${PORT}`);
+  console.log(`API Subscriptions server is now running on ws://localhost:${PORT}${SUBSCRIPTIONS_PATH}`);
+});
 
 // eslint-disable-next-line
 new SubscriptionServer(
@@ -153,7 +157,7 @@ new SubscriptionServer(
     },
   },
   {
-    path: 'subscriptions',
+    path: SUBSCRIPTIONS_PATH,
     server,
   },
 );
