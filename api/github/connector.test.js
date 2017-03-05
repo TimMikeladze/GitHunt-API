@@ -1,15 +1,14 @@
-import { assert } from 'chai';
 import { GitHubConnector } from './connector';
 
 let requestQueue = [];
 
 function mockRequestPromise(requestOptions) {
   // Ensure we expected to get more requests
-  assert.notEqual(requestQueue.length, 0);
+  expect(requestQueue.length).not.toBe(0);
 
   const nextRequest = requestQueue.shift();
   // Ensure this is the request we expected
-  assert.deepEqual(requestOptions, nextRequest.options);
+  expect(requestOptions).toEqual(nextRequest.options);
 
   return new Promise((resolve, reject) => {
     if (nextRequest.result) {
@@ -53,11 +52,11 @@ describe('GitHub connector', () => {
   });
 
   afterEach(() => {
-    assert.equal(requestQueue.length, 0);
+    expect(requestQueue.length).toBe(0);
   });
 
   it('can be constructed', () => {
-    assert.isOk(new GitHubConnector());
+    expect(new GitHubConnector()).toBeTruthy();
   });
 
   it('can load one endpoint', () => {
@@ -72,7 +71,7 @@ describe('GitHub connector', () => {
     });
 
     return connector.get('/endpoint').then((result) => {
-      assert.deepEqual(result, { id: 1 });
+      expect(result).toEqual({ id: 1 });
     });
   });
 
@@ -91,7 +90,7 @@ describe('GitHub connector', () => {
 
     return connector.get('/endpoint')
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       })
       .then(() => (
         // This get call doesn't actually call the API - note that we only
@@ -99,7 +98,7 @@ describe('GitHub connector', () => {
         connector.get('/endpoint')
       ))
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       });
   });
 
@@ -126,7 +125,7 @@ describe('GitHub connector', () => {
     });
 
     return connector.get('/endpoint').then((result) => {
-      assert.deepEqual(result, { id: 1 });
+      expect(result).toEqual({ id: 1 });
     });
   });
 
@@ -169,7 +168,7 @@ describe('GitHub connector', () => {
     return connector.get('/endpoint')
       .then(() => connector2.get('/endpoint'))
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       });
   });
 });
