@@ -16,7 +16,7 @@ const store = new KnexSessionStore({
 
 export function setUpGitHubLogin(app) {
   if (!GITHUB_CLIENT_ID) {
-    console.warn('GitHub client ID not passed; login won\'t work.'); // eslint-ignore-line no-console
+    console.warn('GitHub client ID not passed; login won\'t work.'); // eslint-disable-line no-console
     return;
   }
 
