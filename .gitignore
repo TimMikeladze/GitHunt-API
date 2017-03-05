@@ -1,5 +1,6 @@
 node_modules
 .DS_Store
 dev.sqlite3
+test.sqlite3
 .env
 .idea/

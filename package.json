@@ -9,7 +9,8 @@
     "test": "jest && npm run lint",
     "test:watch": "jest --watch",
     "seed": "knex seed:run",
-    "migrate": "knex migrate:latest"
+    "migrate": "knex migrate:latest",
+    "test:setup": "rm test.sqlite3 || knex migrate:latest --env test && knex seed:run --env test"
   },
   "private": true,
   "repository": {
