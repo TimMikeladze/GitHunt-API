@@ -1,9 +1,9 @@
 // Since Knex always runs this file first, all of our seeds and migrations are babelified.
 require('babel-register');
 
-const { parse } = require('pg-connection-string');
+const parse = require('pg-connection-string').parse;
 
-const { DATABASE_URL } = process.env;
+const DATABASE_URL = process.env.DATABASE_URL;
 
 module.exports = {
   development: {
