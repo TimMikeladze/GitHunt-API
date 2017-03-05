@@ -154,6 +154,6 @@ new SubscriptionServer(
   },
   {
     path: 'subscriptions',
-    server: websocketServer,
+    server,
   }
 );
