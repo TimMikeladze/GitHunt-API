@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`accepts a query 1`] = `
+Object {
+  "data": Object {
+    "feed": Array [
+      Object {
+        "postedBy": Object {
+          "login": "stubailo",
+        },
+        "repository": Object {
+          "name": "apollo-client",
+          "owner": Object {
+            "login": "apollographql",
+          },
+        },
+      },
+      Object {
+        "postedBy": Object {
+          "login": "helfer",
+        },
+        "repository": Object {
+          "name": "graphql-server",
+          "owner": Object {
+            "login": "apollographql",
+          },
+        },
+      },
+      Object {
+        "postedBy": Object {
+          "login": "tmeasday",
+        },
+        "repository": Object {
+          "name": "meteor",
+          "owner": Object {
+            "login": "meteor",
+          },
+        },
+      },
+      Object {
+        "postedBy": Object {
+          "login": "Slava",
+        },
+        "repository": Object {
+          "name": "bootstrap",
+          "owner": Object {
+            "login": "twbs",
+          },
+        },
+      },
+      Object {
+        "postedBy": Object {
+          "login": "Slava",
+        },
+        "repository": Object {
+          "name": "d3",
+          "owner": Object {
+            "login": "d3",
+          },
+        },
+      },
+    ],
+  },
+}
+`;
