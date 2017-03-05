@@ -4,3 +4,6 @@ node_js:
   - "4"
 notifications:
   email: false
+script:
+  - npm run test:setup
+  - npm test
