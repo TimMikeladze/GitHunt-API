@@ -152,5 +152,8 @@ new SubscriptionServer(
       });
     },
   },
-  server,
+  {
+    path: 'subscriptions',
+    server,
+  }
 );
