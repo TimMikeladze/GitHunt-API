@@ -28,7 +28,7 @@ import config from './config';
 export function run({
   OPTICS_API_KEY,
   PORT: portFromEnv = 3010,
-}) {
+} = {}) {
   if (OPTICS_API_KEY) {
     OpticsAgent.instrumentSchema(schema);
   }
