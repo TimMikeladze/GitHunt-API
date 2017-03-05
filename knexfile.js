@@ -13,6 +13,13 @@ module.exports = {
     },
     useNullAsDefault: true,
   },
+  test: {
+    client: 'sqlite3',
+    connection: {
+      filename: './test.sqlite3',
+    },
+    useNullAsDefault: true,
+  },
   production: DATABASE_URL && {
     client: 'pg',
     connection: Object.assign({}, parse(DATABASE_URL), { ssl: true }),
