@@ -1,7 +1,5 @@
 # GitHunt
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/apollographql/GitHunt-API.svg)](https://greenkeeper.io/)
-
 The Apollo Server backend shared by all Apollo client example apps.
 
 Interact with the API yourself at [http://api.githunt.com/graphiql](http://api.githunt.com/graphiql).
