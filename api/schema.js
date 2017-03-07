@@ -1,7 +1,8 @@
 import { merge } from 'lodash';
+import { makeExecutableSchema } from 'graphql-tools';
+
 import { schema as gitHubSchema, resolvers as gitHubResolvers } from './github/schema';
 import { schema as sqlSchema, resolvers as sqlResolvers } from './sql/schema';
-import { makeExecutableSchema } from 'graphql-tools';
 import { pubsub } from './subscriptions';
 
 const rootSchema = [`
@@ -130,12 +131,10 @@ const rootResolvers = {
           context.Comments.submitComment(
             repoFullName,
             context.user.login,
-            commentContent
+            commentContent,
           )
         ))
-        .then(([id]) =>
-          context.Comments.getCommentById(id)
-        )
+        .then(([id]) => context.Comments.getCommentById(id))
         .then((comment) => {
           // publish subscription notification
           pubsub.publish('commentAdded', comment);
@@ -157,7 +156,7 @@ const rootResolvers = {
       return context.Entries.voteForEntry(
         repoFullName,
         voteValue,
-        context.user.login
+        context.user.login,
       ).then(() => (
         context.Entries.getByRepoFullName(repoFullName)
       ));
