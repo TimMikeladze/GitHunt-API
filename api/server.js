@@ -4,6 +4,8 @@ import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import OpticsAgent from 'optics-agent';
 import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 
 import {
   GITHUB_CLIENT_ID,
@@ -14,13 +16,9 @@ import { setUpGitHubLogin } from './githubLogin';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
-
-import { createServer } from 'http';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
-
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
@@ -132,7 +130,7 @@ export function run({
   const server = createServer(app);
 
   server.listen(port, () => console.log( // eslint-disable-line no-console
-    `API Server is now running on http://localhost:${port}`
+    `API Server is now running on http://localhost:${port}`,
   ));
 
   // eslint-disable-next-line
@@ -160,7 +158,7 @@ export function run({
     {
       path: 'subscriptions',
       server,
-    }
+    },
   );
 
   return server;
