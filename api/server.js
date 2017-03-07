@@ -138,7 +138,7 @@ export function run({
     {
       subscriptionManager,
 
-      // the obSubscribe function is called for every new subscription
+      // the onSubscribe function is called for every new subscription
       // and we use it to set the GraphQL context for this subscription
       onSubscribe: (msg, params) => {
         const gitHubConnector = new GitHubConnector({
