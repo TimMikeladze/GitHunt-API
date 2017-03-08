@@ -53,3 +53,5 @@ function noRequestsLeft() {
 rp.__pushMockRequest = pushMockRequest; // eslint-disable-line no-underscore-dangle
 rp.__flushRequestQueue = flushRequestQueue; // eslint-disable-line no-underscore-dangle
 rp.__noRequestsLeft = noRequestsLeft; // eslint-disable-line no-underscore-dangle
+
+rp.actual = require.requireActual('request-promise');
