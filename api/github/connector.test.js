@@ -1,69 +1,24 @@
-import { assert } from 'chai';
+import rp from 'request-promise';
+
 import { GitHubConnector } from './connector';
-
-let requestQueue = [];
-
-function mockRequestPromise(requestOptions) {
-  // Ensure we expected to get more requests
-  assert.notEqual(requestQueue.length, 0);
-
-  const nextRequest = requestQueue.shift();
-  // Ensure this is the request we expected
-  assert.deepEqual(requestOptions, nextRequest.options);
-
-  return new Promise((resolve, reject) => {
-    if (nextRequest.result) {
-      resolve(nextRequest.result);
-    } else if (nextRequest.error) {
-      reject(nextRequest.error);
-    } else {
-      throw new Error('Mocked request must have result or error.');
-    }
-  });
-}
-
-function pushMockRequest({ options, result, error }) {
-  const defaultOptions = {
-    json: true,
-    headers: {
-      'user-agent': 'GitHunt',
-    },
-    resolveWithFullResponse: true,
-  };
-  const { uri, ...rest } = options;
-
-  const url = `https://api.github.com${uri}`;
-
-  requestQueue.push({
-    options: {
-      ...defaultOptions,
-      ...rest,
-      uri: url,
-    },
-    result,
-    error,
-  });
-}
-
-GitHubConnector.mockRequestPromise = mockRequestPromise;
 
 describe('GitHub connector', () => {
   beforeEach(() => {
-    requestQueue = [];
+    rp.__flushRequestQueue();
   });
 
   afterEach(() => {
-    assert.equal(requestQueue.length, 0);
+    rp.__noRequestsLeft();
   });
 
   it('can be constructed', () => {
-    assert.isOk(new GitHubConnector());
+    expect(new GitHubConnector()).toBeTruthy();
   });
 
   it('can load one endpoint', () => {
     const connector = new GitHubConnector();
 
-    pushMockRequest({
+    rp.__pushMockRequest({
       options: { uri: '/endpoint' },
       result: {
         headers: {},
@@ -72,14 +27,14 @@ describe('GitHub connector', () => {
     });
 
     return connector.get('/endpoint').then((result) => {
-      assert.deepEqual(result, { id: 1 });
+      expect(result).toEqual({ id: 1 });
     });
   });
 
   it('fetches each endpoint only once per instance', () => {
     const connector = new GitHubConnector();
 
-    pushMockRequest({
+    rp.__pushMockRequest({
       options: {
         uri: '/endpoint',
       },
@@ -91,7 +46,7 @@ describe('GitHub connector', () => {
 
     return connector.get('/endpoint')
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       })
       .then(() => (
         // This get call doesn't actually call the API - note that we only
@@ -99,7 +54,7 @@ describe('GitHub connector', () => {
         connector.get('/endpoint')
       ))
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       });
   });
 
@@ -109,7 +64,7 @@ describe('GitHub connector', () => {
       clientSecret: 'fake_client_secret',
     });
 
-    pushMockRequest({
+    rp.__pushMockRequest({
       options: {
         uri: '/endpoint',
         qs: {
@@ -126,7 +81,7 @@ describe('GitHub connector', () => {
     });
 
     return connector.get('/endpoint').then((result) => {
-      assert.deepEqual(result, { id: 1 });
+      expect(result).toEqual({ id: 1 });
     });
   });
 
@@ -134,7 +89,7 @@ describe('GitHub connector', () => {
     const connector = new GitHubConnector();
     const etag = 'etag';
 
-    pushMockRequest({
+    rp.__pushMockRequest({
       options: {
         uri: '/endpoint',
       },
@@ -150,7 +105,7 @@ describe('GitHub connector', () => {
 
     const connector2 = new GitHubConnector();
 
-    pushMockRequest({
+    rp.__pushMockRequest({
       options: {
         uri: '/endpoint',
         headers: {
@@ -169,7 +124,7 @@ describe('GitHub connector', () => {
     return connector.get('/endpoint')
       .then(() => connector2.get('/endpoint'))
       .then((result) => {
-        assert.deepEqual(result, { id: 1 });
+        expect(result).toEqual({ id: 1 });
       });
   });
 });
