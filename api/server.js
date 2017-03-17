@@ -132,9 +132,8 @@ export function run({
   const server = createServer(app);
 
   server.listen(port, () => {
-    // eslint-disable-line no-console
-    console.log(`API Server is now running on http://localhost:${port}`);
-    console.log(`API Subscriptions server is now running on ws://localhost:${port}${SUBSCRIPTIONS_PATH}`);
+    console.log(`API Server is now running on http://localhost:${port}`); // eslint-disable-line no-console
+    console.log(`API Subscriptions server is now running on ws://localhost:${port}${SUBSCRIPTIONS_PATH}`); // eslint-disable-line no-console
   });
 
   // eslint-disable-next-line
