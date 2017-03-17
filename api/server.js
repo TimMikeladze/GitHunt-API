@@ -22,6 +22,8 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
+const SUBSCRIPTIONS_PATH = '/subscriptions';
+
 // Arguments usually come from env vars
 export function run({
   OPTICS_API_KEY,
@@ -129,9 +131,10 @@ export function run({
 
   const server = createServer(app);
 
-  server.listen(port, () => console.log( // eslint-disable-line no-console
-    `API Server is now running on http://localhost:${port}`,
-  ));
+  server.listen(port, () => {
+    console.log(`API Server is now running on http://localhost:${port}`); // eslint-disable-line no-console
+    console.log(`API Subscriptions server is now running on ws://localhost:${port}${SUBSCRIPTIONS_PATH}`); // eslint-disable-line no-console
+  });
 
   // eslint-disable-next-line
   new SubscriptionServer(
@@ -156,7 +159,7 @@ export function run({
       },
     },
     {
-      path: 'subscriptions',
+      path: SUBSCRIPTIONS_PATH,
       server,
     },
   );
