@@ -38,6 +38,10 @@ export function run({
     port = parseInt(portFromEnv, 10);
   }
 
+  const subscriptionsURL = process.env.NODE_ENV !== 'production'
+      ? `ws://localhost:${port}${SUBSCRIPTIONS_PATH}`
+      : `ws://api.githunt.com${SUBSCRIPTIONS_PATH}`;
+
   const app = express();
 
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -111,6 +115,7 @@ export function run({
 
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
+    subscriptionsEndpoint: subscriptionsURL,
     query: `{
     feed (type: NEW, limit: 5) {
       repository {
