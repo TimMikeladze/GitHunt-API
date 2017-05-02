@@ -65,7 +65,7 @@ export function run({
   );
 
   const sessionStore = setUpGitHubLogin(app);
-  app.use(cookieParser('your secret'));
+  app.use(cookieParser(config.sessionStoreSecret));
 
   if (OPTICS_API_KEY) {
     app.use('/graphql', OpticsAgent.middleware());
@@ -151,34 +151,6 @@ export function run({
     {
       schema,
       executor: graphqlExecutor,
-
-      /*
-      onConnect: (msg, connectionContext) => {
-        const socket = connectionContext.socket;
-
-        // We get req.user from passport-github with some pretty oddly named fields,
-        // let's convert that to the fields in our schema, which match the GitHub
-        // API field names.
-        if (socket.upgradeReq) {
-          // get sessionID
-
-          const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
-          const sessionID = cookieParser.signedCookie(cookies['connect.sid'],
-          config.sessionStoreSecret);
-          // get the session object
-          sessionStore.get(sessionID, (err, session) => {
-            if (session && session.passport && session.passport.user) {
-              const sessionUser = session.passport.user;
-              wsSessionUser = {
-                login: sessionUser.username,
-                html_url: sessionUser.profileUrl,
-                avatar_url: sessionUser.photos[0].value,
-              };
-            }
-          });
-        }
-      },
-      */
 
       // the onSubscribe function is called for every new subscription
       // and we use it to set the GraphQL context for this subscription
