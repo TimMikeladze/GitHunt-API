@@ -1,9 +1,8 @@
-import { PubSub, SubscriptionManager } from 'graphql-subscriptions';
+import { PubSub, GraphQLExecutorWithSubscriptions } from 'graphql-subscriptions';
 import schema from './schema';
 
 const pubsub = new PubSub();
-const subscriptionManager = new SubscriptionManager({
-  schema,
+const graphqlExecutor = new GraphQLExecutorWithSubscriptions({
   pubsub,
   setupFunctions: {
     commentAdded: (options, args) => ({
@@ -12,4 +11,4 @@ const subscriptionManager = new SubscriptionManager({
   },
 });
 
-export { subscriptionManager, pubsub };
+export { graphqlExecutor, pubsub };
