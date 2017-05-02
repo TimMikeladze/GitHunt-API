@@ -2,7 +2,6 @@ import path from 'path';
 import express from 'express';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
-import url from 'url';
 import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import OpticsAgent from 'optics-agent';
@@ -27,7 +26,6 @@ import queryMap from '../extracted_queries.json';
 import config from './config';
 
 const SUBSCRIPTIONS_PATH = '/subscriptions';
-let wsSessionUser = null;
 
 // Arguments usually come from env vars
 export function run({
@@ -66,7 +64,7 @@ export function run({
     },
   );
 
-  var sessionStore = setUpGitHubLogin(app);
+  const sessionStore = setUpGitHubLogin(app);
   app.use(cookieParser('your secret'));
 
   if (OPTICS_API_KEY) {
@@ -154,54 +152,86 @@ export function run({
       schema,
       executor: graphqlExecutor,
 
+      /*
       onConnect: (msg, connectionContext) => {
         const socket = connectionContext.socket;
 
         // We get req.user from passport-github with some pretty oddly named fields,
         // let's convert that to the fields in our schema, which match the GitHub
         // API field names.
-        /**/
         if (socket.upgradeReq) {
-          var location = url.parse(socket.upgradeReq.url, true);
-          //get sessionID
-          var cookies = cookie.parse(socket.upgradeReq.headers.cookie);
-          var sessionID = cookieParser.signedCookie(cookies["connect.sid"], config.sessionStoreSecret);
-          //get the session object
-          sessionStore.get(sessionID, function (err, session) {
-            const sessionUser = session.passport.user;
-            wsSessionUser = {
-              login: sessionUser.username,
-              html_url: sessionUser.profileUrl,
-              avatar_url: sessionUser.photos[0].value,
-            };
+          // get sessionID
 
-          }); 
-        };
+          const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
+          const sessionID = cookieParser.signedCookie(cookies['connect.sid'],
+          config.sessionStoreSecret);
+          // get the session object
+          sessionStore.get(sessionID, (err, session) => {
+            if (session && session.passport && session.passport.user) {
+              const sessionUser = session.passport.user;
+              wsSessionUser = {
+                login: sessionUser.username,
+                html_url: sessionUser.profileUrl,
+                avatar_url: sessionUser.photos[0].value,
+              };
+            }
+          });
+        }
       },
+      */
 
       // the onSubscribe function is called for every new subscription
       // and we use it to set the GraphQL context for this subscription
       onRequest: (msg, params, socket) => {
-        const gitHubConnector = new GitHubConnector({
-          clientId: GITHUB_CLIENT_ID,
-          clientSecret: GITHUB_CLIENT_SECRET,
-        });
+        return new Promise((resolve) => {
+          const gitHubConnector = new GitHubConnector({
+            clientId: GITHUB_CLIENT_ID,
+            clientSecret: GITHUB_CLIENT_SECRET,
+          });
 
-        let opticsContext;
-        if (OPTICS_API_KEY) {
-          opticsContext = OpticsAgent.context(req);
-        }
+          let opticsContext;
+          if (OPTICS_API_KEY) {
+            opticsContext = OpticsAgent.context(socket.upgradeReq);
+          }
 
-        return Object.assign({}, params, {
-              context: {
-                user: wsSessionUser,
-                Repositories: new Repositories({ connector: gitHubConnector }),
-                Users: new Users({ connector: gitHubConnector }),
-                Entries: new Entries(),
-                Comments: new Comments(),
-                opticsContext,
-              },
+          let wsSessionUser = null;
+          if (socket.upgradeReq) {
+            // get sessionID
+            const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
+            const sessionID = cookieParser.signedCookie(cookies['connect.sid'], config.sessionStoreSecret);
+            // get the session object
+            sessionStore.get(sessionID, (err, session) => {
+              if (session && session.passport && session.passport.user) {
+                const sessionUser = session.passport.user;
+                wsSessionUser = {
+                  login: sessionUser.username,
+                  html_url: sessionUser.profileUrl,
+                  avatar_url: sessionUser.photos[0].value,
+                };
+                resolve(Object.assign({}, params, {
+                  context: {
+                    user: wsSessionUser,
+                    Repositories: new Repositories({ connector: gitHubConnector }),
+                    Users: new Users({ connector: gitHubConnector }),
+                    Entries: new Entries(),
+                    Comments: new Comments(),
+                    opticsContext,
+                  },
+                }));
+              } else {
+                resolve(resolve(Object.assign({}, params, {
+                  context: {
+                    Repositories: new Repositories({ connector: gitHubConnector }),
+                    Users: new Users({ connector: gitHubConnector }),
+                    Entries: new Entries(),
+                    Comments: new Comments(),
+                    opticsContext,
+                  },
+                })));
+              }
             });
+          }
+        });
       },
     },
     {
