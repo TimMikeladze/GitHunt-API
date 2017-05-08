@@ -91,8 +91,8 @@ schema {
 const rootResolvers = {
   Query: {
     feed(root, { type, offset, limit }, context) {
-      // Ensure API consumer can only fetch 10 items at most
-      const protectedLimit = (limit < 1 || limit > 10) ? 10 : limit;
+      // Ensure API consumer can only fetch 20 items at most
+      const protectedLimit = (limit < 1 || limit > 20) ? 20 : limit;
 
       return context.Entries.getForFeed(type, offset, protectedLimit);
     },
