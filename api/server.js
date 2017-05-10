@@ -170,6 +170,12 @@ export function run({
             clientSecret: GITHUB_CLIENT_SECRET,
           });
 
+          // Support for persistedQueries
+          if (config.persistedQueries) {
+            // eslint-disable-next-line no-param-reassign
+            params.query = invertedMap[msg.payload.id];
+          }
+
           let opticsContext;
           if (OPTICS_API_KEY) {
             opticsContext = OpticsAgent.context(socket.upgradeReq);
