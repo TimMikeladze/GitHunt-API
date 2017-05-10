@@ -188,6 +188,10 @@ export function run({
             const sessionID = cookieParser.signedCookie(cookies['connect.sid'], config.sessionStoreSecret);
             // get the session object
             sessionStore.get(sessionID, (err, session) => {
+              if (err) {
+                throw new Error('Failed retrieving sessionID from the sessionStore.');
+              }
+
               if (session && session.passport && session.passport.user) {
                 const sessionUser = session.passport.user;
                 wsSessionUser = {
