@@ -192,34 +192,36 @@ export function run({
                 throw new Error('Failed retrieving sessionID from the sessionStore.');
               }
 
-              if (session && session.passport && session.passport.user) {
-                const sessionUser = session.passport.user;
-                wsSessionUser = {
-                  login: sessionUser.username,
-                  html_url: sessionUser.profileUrl,
-                  avatar_url: sessionUser.photos[0].value,
-                };
-                resolve(Object.assign({}, params, {
-                  context: {
-                    user: wsSessionUser,
-                    Repositories: new Repositories({ connector: gitHubConnector }),
-                    Users: new Users({ connector: gitHubConnector }),
-                    Entries: new Entries(),
-                    Comments: new Comments(),
-                    opticsContext,
-                  },
-                }));
-              } else {
-                resolve(resolve(Object.assign({}, params, {
-                  context: {
-                    Repositories: new Repositories({ connector: gitHubConnector }),
-                    Users: new Users({ connector: gitHubConnector }),
-                    Entries: new Entries(),
-                    Comments: new Comments(),
-                    opticsContext,
-                  },
-                })));
-              }
+              const baseContext = {
+                context: {
+                  Repositories: new Repositories({ connector: gitHubConnector }),
+                  Users: new Users({ connector: gitHubConnector }),
+                  Entries: new Entries(),
+                  Comments: new Comments(),
+                  opticsContext,
+                },
+              };
+
+              new Promise((resolvePromise) => {
+                resolvePromise(Object.assign({}, params, baseContext));
+              })
+              .then((paramsWithFulfilledBaseContext) => {
+                if (session && session.passport && session.passport.user) {
+                  const sessionUser = session.passport.user;
+                  wsSessionUser = {
+                    login: sessionUser.username,
+                    html_url: sessionUser.profileUrl,
+                    avatar_url: sessionUser.photos[0].value,
+                  };
+
+                  resolve(Object.assign(paramsWithFulfilledBaseContext, {
+                    context: Object.assign(paramsWithFulfilledBaseContext.context, {
+                      user: wsSessionUser,
+                    }),
+                  }));
+                }
+                resolve(paramsWithFulfilledBaseContext);
+              });
             });
           }
         });
