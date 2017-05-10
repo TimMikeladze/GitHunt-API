@@ -152,10 +152,19 @@ export function run({
       schema,
       executor: graphqlExecutor,
 
-      // the onSubscribe function is called for every new subscription
-      // and we use it to set the GraphQL context for this subscription
-      onRequest: (msg, params, socket) => {
+      // the onOperation function is called for every new operation
+      // and we use it to set the GraphQL context for this operation
+      onOperation: (msg, params, socket) => {
         return new Promise((resolve) => {
+          // Get the query, the same way express-graphql does it
+          // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
+          const query = params.query;
+          if (query && query.length > 2000) {
+            // None of our app's queries are this long
+            // Probably indicates someone trying to send an overly expensive query
+            throw new Error('Query too large.');
+          }
+
           const gitHubConnector = new GitHubConnector({
             clientId: GITHUB_CLIENT_ID,
             clientSecret: GITHUB_CLIENT_SECRET,
