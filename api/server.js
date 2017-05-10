@@ -25,7 +25,7 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
-const SUBSCRIPTIONS_PATH = '/subscriptions';
+const WS_GQL_PATH = '/graphql';
 
 // Arguments usually come from env vars
 export function run({
@@ -41,9 +41,9 @@ export function run({
     port = parseInt(portFromEnv, 10);
   }
 
-  const subscriptionsURL = process.env.NODE_ENV !== 'production'
-      ? `ws://localhost:${port}${SUBSCRIPTIONS_PATH}`
-      : `ws://api.githunt.com${SUBSCRIPTIONS_PATH}`;
+  const wsGqlURL = process.env.NODE_ENV !== 'production'
+      ? `ws://localhost:${port}${WS_GQL_PATH}`
+      : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
 
@@ -120,7 +120,7 @@ export function run({
 
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
-    subscriptionsEndpoint: subscriptionsURL,
+    subscriptionsEndpoint: wsGqlURL,
     query: `{
     feed (type: NEW, limit: 5) {
       repository {
@@ -143,7 +143,7 @@ export function run({
 
   server.listen(port, () => {
     console.log(`API Server is now running on http://localhost:${port}`); // eslint-disable-line no-console
-    console.log(`API Subscriptions server is now running on ws://localhost:${port}${SUBSCRIPTIONS_PATH}`); // eslint-disable-line no-console
+    console.log(`API Server over web socket with subscriptions is now running on ws://localhost:${port}${WS_GQL_PATH}`); // eslint-disable-line no-console
   });
 
   // eslint-disable-next-line
@@ -228,7 +228,7 @@ export function run({
       },
     },
     {
-      path: SUBSCRIPTIONS_PATH,
+      path: WS_GQL_PATH,
       server,
     },
   );
