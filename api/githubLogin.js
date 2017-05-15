@@ -18,7 +18,7 @@ const store = new KnexSessionStore({
 export function setUpGitHubLogin(app) {
   if (!GITHUB_CLIENT_ID) {
     console.warn('GitHub client ID not passed; login won\'t work.'); // eslint-disable-line no-console
-    return;
+    return null;
   }
 
   const gitHubStrategyOptions = {
@@ -34,8 +34,8 @@ export function setUpGitHubLogin(app) {
       cb(null, profile);
     }));
 
-  passport.serializeUser((user, cb) => {cb(null, user);});
-  passport.deserializeUser((obj, cb) => {cb(null, obj);});
+  passport.serializeUser((user, cb) => { cb(null, user); });
+  passport.deserializeUser((obj, cb) => { cb(null, obj); });
 
   app.use(session({
     secret: config.sessionStoreSecret,

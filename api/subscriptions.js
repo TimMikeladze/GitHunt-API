@@ -1,5 +1,4 @@
 import { PubSub, GraphQLExecutorWithSubscriptions } from 'graphql-subscriptions';
-import schema from './schema';
 
 const pubsub = new PubSub();
 const graphqlExecutor = new GraphQLExecutorWithSubscriptions({
