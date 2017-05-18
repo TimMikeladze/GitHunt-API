@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
 
 import {
   GITHUB_CLIENT_ID,
@@ -19,7 +20,6 @@ import { setUpGitHubLogin } from './githubLogin';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
-import { graphqlExecutor } from './subscriptions';
 
 import schema from './schema';
 import queryMap from '../extracted_queries.json';
@@ -29,9 +29,9 @@ const WS_GQL_PATH = '/graphql';
 
 // Arguments usually come from env vars
 export function run({
-  OPTICS_API_KEY,
-  PORT: portFromEnv = 3010,
-} = {}) {
+                      OPTICS_API_KEY,
+                      PORT: portFromEnv = 3010,
+                    } = {}) {
   if (OPTICS_API_KEY) {
     OpticsAgent.instrumentSchema(schema);
   }
@@ -42,8 +42,8 @@ export function run({
   }
 
   const wsGqlURL = process.env.NODE_ENV !== 'production'
-      ? `ws://localhost:${port}${WS_GQL_PATH}`
-      : `ws://api.githunt.com${WS_GQL_PATH}`;
+    ? `ws://localhost:${port}${WS_GQL_PATH}`
+    : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
 
@@ -152,7 +152,8 @@ export function run({
   new SubscriptionServer(
     {
       schema,
-      executor: graphqlExecutor,
+      execute,
+      subscribe,
 
       // the onOperation function is called for every new operation
       // and we use it to set the GraphQL context for this operation
@@ -187,45 +188,49 @@ export function run({
 
           let wsSessionUser = null;
           if (socket.upgradeReq) {
-            // get sessionID
             const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
             const sessionID = cookieParser.signedCookie(cookies['connect.sid'], config.sessionStoreSecret);
+
+            const baseContext = {
+              context: {
+                Repositories: new Repositories({ connector: gitHubConnector }),
+                Users: new Users({ connector: gitHubConnector }),
+                Entries: new Entries(),
+                Comments: new Comments(),
+                opticsContext,
+              },
+            };
+
+            const paramsWithFulfilledBaseContext = Object.assign({}, params, baseContext);
+
+            if (!sessionID) {
+              resolve(paramsWithFulfilledBaseContext);
+
+              return;
+            }
+
             // get the session object
             sessionStore.get(sessionID, (err, session) => {
               if (err) {
                 throw new Error('Failed retrieving sessionID from the sessionStore.');
               }
 
-              const baseContext = {
-                context: {
-                  Repositories: new Repositories({ connector: gitHubConnector }),
-                  Users: new Users({ connector: gitHubConnector }),
-                  Entries: new Entries(),
-                  Comments: new Comments(),
-                  opticsContext,
-                },
-              };
+              if (session && session.passport && session.passport.user) {
+                const sessionUser = session.passport.user;
+                wsSessionUser = {
+                  login: sessionUser.username,
+                  html_url: sessionUser.profileUrl,
+                  avatar_url: sessionUser.photos[0].value,
+                };
 
-              new Promise((resolvePromise) => {
-                resolvePromise(Object.assign({}, params, baseContext));
-              })
-              .then((paramsWithFulfilledBaseContext) => {
-                if (session && session.passport && session.passport.user) {
-                  const sessionUser = session.passport.user;
-                  wsSessionUser = {
-                    login: sessionUser.username,
-                    html_url: sessionUser.profileUrl,
-                    avatar_url: sessionUser.photos[0].value,
-                  };
+                resolve(Object.assign(paramsWithFulfilledBaseContext, {
+                  context: Object.assign(paramsWithFulfilledBaseContext.context, {
+                    user: wsSessionUser,
+                  }),
+                }));
+              }
 
-                  resolve(Object.assign(paramsWithFulfilledBaseContext, {
-                    context: Object.assign(paramsWithFulfilledBaseContext.context, {
-                      user: wsSessionUser,
-                    }),
-                  }));
-                }
-                resolve(paramsWithFulfilledBaseContext);
-              });
+              resolve(paramsWithFulfilledBaseContext);
             });
           }
         });
