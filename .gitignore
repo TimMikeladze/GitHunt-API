@@ -4,3 +4,6 @@ dev.sqlite3
 test.sqlite3
 .env
 .idea/
+yarn.lock
+yarn-error.log
+*.tgz
