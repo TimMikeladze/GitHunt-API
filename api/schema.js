@@ -168,7 +168,7 @@ const rootResolvers = {
   },
   Subscription: {
     commentAdded: {
-      subscribe: withFilter(pubsub.asyncIterator(COMMENT_ADDED_TOPIC), (payload, args) => {
+      subscribe: withFilter(() => pubsub.asyncIterator(COMMENT_ADDED_TOPIC), (payload, args) => {
         return payload.commentAdded.repository_name === args.repoFullName;
       }),
     },
