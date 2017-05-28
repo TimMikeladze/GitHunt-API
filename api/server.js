@@ -25,7 +25,7 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
-const WS_GQL_PATH = '/graphql';
+const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
