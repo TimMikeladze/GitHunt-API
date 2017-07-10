@@ -1,5 +1,6 @@
 import { merge } from 'lodash';
 import { makeExecutableSchema } from 'graphql-tools';
+import { withFilter } from 'graphql-subscriptions';
 
 import { schema as gitHubSchema, resolvers as gitHubResolvers } from './github/schema';
 import { schema as sqlSchema, resolvers as sqlResolvers } from './sql/schema';
@@ -88,11 +89,13 @@ schema {
 
 `];
 
+const COMMENT_ADDED_TOPIC = 'commentAdded';
+
 const rootResolvers = {
   Query: {
     feed(root, { type, offset, limit }, context) {
-      // Ensure API consumer can only fetch 10 items at most
-      const protectedLimit = (limit < 1 || limit > 10) ? 10 : limit;
+      // Ensure API consumer can only fetch 20 items at most
+      const protectedLimit = (limit < 1 || limit > 20) ? 20 : limit;
 
       return context.Entries.getForFeed(type, offset, protectedLimit);
     },
@@ -137,7 +140,8 @@ const rootResolvers = {
         .then(([id]) => context.Comments.getCommentById(id))
         .then((comment) => {
           // publish subscription notification
-          pubsub.publish('commentAdded', comment);
+          pubsub.publish(COMMENT_ADDED_TOPIC, { commentAdded: comment });
+
           return comment;
         });
     },
@@ -163,9 +167,10 @@ const rootResolvers = {
     },
   },
   Subscription: {
-    commentAdded(comment) {
-      // the subscription payload is the comment.
-      return comment;
+    commentAdded: {
+      subscribe: withFilter(() => pubsub.asyncIterator(COMMENT_ADDED_TOPIC), (payload, args) => {
+        return payload.commentAdded.repository_name === args.repoFullName;
+      }),
     },
   },
 };

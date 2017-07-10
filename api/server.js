@@ -1,5 +1,7 @@
 import path from 'path';
 import express from 'express';
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import OpticsAgent from 'optics-agent';
@@ -7,6 +9,7 @@ import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
 
 import {
   GITHUB_CLIENT_ID,
@@ -17,19 +20,18 @@ import { setUpGitHubLogin } from './githubLogin';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
 import { Entries, Comments } from './sql/models';
-import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
-const SUBSCRIPTIONS_PATH = '/subscriptions';
+const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
-  OPTICS_API_KEY,
-  PORT: portFromEnv = 3010,
-} = {}) {
+                      OPTICS_API_KEY,
+                      PORT: portFromEnv = 3010,
+                    } = {}) {
   if (OPTICS_API_KEY) {
     OpticsAgent.instrumentSchema(schema);
   }
@@ -39,9 +41,9 @@ export function run({
     port = parseInt(portFromEnv, 10);
   }
 
-  const subscriptionsURL = process.env.NODE_ENV !== 'production'
-      ? `ws://localhost:${port}${SUBSCRIPTIONS_PATH}`
-      : `ws://api.githunt.com${SUBSCRIPTIONS_PATH}`;
+  const wsGqlURL = process.env.NODE_ENV !== 'production'
+    ? `ws://localhost:${port}${WS_GQL_PATH}`
+    : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
 
@@ -62,20 +64,23 @@ export function run({
     },
   );
 
-  setUpGitHubLogin(app);
+  const sessionStore = setUpGitHubLogin(app);
+  app.use(cookieParser(config.sessionStoreSecret));
 
   if (OPTICS_API_KEY) {
     app.use('/graphql', OpticsAgent.middleware());
   }
 
   app.use('/graphql', graphqlExpress((req) => {
-    // Get the query, the same way express-graphql does it
-    // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
-    const query = req.query.query || req.body.query;
-    if (query && query.length > 2000) {
-      // None of our app's queries are this long
-      // Probably indicates someone trying to send an overly expensive query
-      throw new Error('Query too large.');
+    if (!config.persistedQueries) {
+      // Get the query, the same way express-graphql does it
+      // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
+      const query = req.query.query || req.body.query;
+      if (query && query.length > 2000) {
+        // None of our app's queries are this long
+        // Probably indicates someone trying to send an overly expensive query
+        throw new Error('Query too large.');
+      }
     }
 
     let user;
@@ -117,7 +122,7 @@ export function run({
 
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
-    subscriptionsEndpoint: subscriptionsURL,
+    subscriptionsEndpoint: wsGqlURL,
     query: `{
     feed (type: NEW, limit: 5) {
       repository {
@@ -140,33 +145,99 @@ export function run({
 
   server.listen(port, () => {
     console.log(`API Server is now running on http://localhost:${port}`); // eslint-disable-line no-console
-    console.log(`API Subscriptions server is now running on ws://localhost:${port}${SUBSCRIPTIONS_PATH}`); // eslint-disable-line no-console
+    console.log(`API Server over web socket with subscriptions is now running on ws://localhost:${port}${WS_GQL_PATH}`); // eslint-disable-line no-console
   });
 
   // eslint-disable-next-line
   new SubscriptionServer(
     {
-      subscriptionManager,
+      schema,
+      execute,
+      subscribe,
 
-      // the onSubscribe function is called for every new subscription
-      // and we use it to set the GraphQL context for this subscription
-      onSubscribe: (msg, params) => {
-        const gitHubConnector = new GitHubConnector({
-          clientId: GITHUB_CLIENT_ID,
-          clientSecret: GITHUB_CLIENT_SECRET,
-        });
-        return Object.assign({}, params, {
-          context: {
-            Repositories: new Repositories({ connector: gitHubConnector }),
-            Users: new Users({ connector: gitHubConnector }),
-            Entries: new Entries(),
-            Comments: new Comments(),
-          },
+      // the onOperation function is called for every new operation
+      // and we use it to set the GraphQL context for this operation
+      onOperation: (msg, params, socket) => {
+        return new Promise((resolve) => {
+          if (!config.persistedQueries) {
+            // Get the query, the same way express-graphql does it
+            // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
+            const query = params.query;
+            if (query && query.length > 2000) {
+              // None of our app's queries are this long
+              // Probably indicates someone trying to send an overly expensive query
+              throw new Error('Query too large.');
+            }
+          }
+
+          const gitHubConnector = new GitHubConnector({
+            clientId: GITHUB_CLIENT_ID,
+            clientSecret: GITHUB_CLIENT_SECRET,
+          });
+
+          // Support for persistedQueries
+          if (config.persistedQueries) {
+            // eslint-disable-next-line no-param-reassign
+            params.query = invertedMap[msg.payload.id];
+          }
+
+          let opticsContext;
+          if (OPTICS_API_KEY) {
+            opticsContext = OpticsAgent.context(socket.upgradeReq);
+          }
+
+          let wsSessionUser = null;
+          if (socket.upgradeReq) {
+            const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
+            const sessionID = cookieParser.signedCookie(cookies['connect.sid'], config.sessionStoreSecret);
+
+            const baseContext = {
+              context: {
+                Repositories: new Repositories({ connector: gitHubConnector }),
+                Users: new Users({ connector: gitHubConnector }),
+                Entries: new Entries(),
+                Comments: new Comments(),
+                opticsContext,
+              },
+            };
+
+            const paramsWithFulfilledBaseContext = Object.assign({}, params, baseContext);
+
+            if (!sessionID) {
+              resolve(paramsWithFulfilledBaseContext);
+
+              return;
+            }
+
+            // get the session object
+            sessionStore.get(sessionID, (err, session) => {
+              if (err) {
+                throw new Error('Failed retrieving sessionID from the sessionStore.');
+              }
+
+              if (session && session.passport && session.passport.user) {
+                const sessionUser = session.passport.user;
+                wsSessionUser = {
+                  login: sessionUser.username,
+                  html_url: sessionUser.profileUrl,
+                  avatar_url: sessionUser.photos[0].value,
+                };
+
+                resolve(Object.assign(paramsWithFulfilledBaseContext, {
+                  context: Object.assign(paramsWithFulfilledBaseContext.context, {
+                    user: wsSessionUser,
+                  }),
+                }));
+              }
+
+              resolve(paramsWithFulfilledBaseContext);
+            });
+          }
         });
       },
     },
     {
-      path: SUBSCRIPTIONS_PATH,
+      path: WS_GQL_PATH,
       server,
     },
   );

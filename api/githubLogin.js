@@ -2,6 +2,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github';
 import knex from './sql/connector';
+import config from './config';
 
 import {
   GITHUB_CLIENT_ID,
@@ -17,7 +18,7 @@ const store = new KnexSessionStore({
 export function setUpGitHubLogin(app) {
   if (!GITHUB_CLIENT_ID) {
     console.warn('GitHub client ID not passed; login won\'t work.'); // eslint-disable-line no-console
-    return;
+    return null;
   }
 
   const gitHubStrategyOptions = {
@@ -33,11 +34,11 @@ export function setUpGitHubLogin(app) {
       cb(null, profile);
     }));
 
-  passport.serializeUser((user, cb) => cb(null, user));
-  passport.deserializeUser((obj, cb) => cb(null, obj));
+  passport.serializeUser((user, cb) => { cb(null, user); });
+  passport.deserializeUser((obj, cb) => { cb(null, obj); });
 
   app.use(session({
-    secret: 'your secret',
+    secret: config.sessionStoreSecret,
     resave: true,
     saveUninitialized: true,
     store,
@@ -57,4 +58,6 @@ export function setUpGitHubLogin(app) {
     req.logout();
     res.redirect('/');
   });
+
+  return store;
 }
