@@ -8,7 +8,7 @@ type Comment {
   id: Int!
 
   # The GitHub user who posted the comment
-  postedBy: User!
+  postedBy: User
 
   # A timestamp of when the comment was posted
   createdAt: Float! # Actually a date
@@ -28,10 +28,10 @@ type Vote {
 # Information about a GitHub repository submitted to GitHunt
 type Entry {
   # Information about the repository from GitHub
-  repository: Repository!
+  repository: Repository
 
   # The GitHub user who submitted this entry
-  postedBy: User!
+  postedBy: User
 
   # A timestamp of when the entry was submitted
   createdAt: Float! # Actually a date

@@ -60,7 +60,10 @@ export class GitHubConnector {
           if (err.statusCode === 304) {
             resolve(cachedRes.result);
           } else {
-            reject(err);
+            // We need better error handling on the client, for now
+            // just return null if GitHub can't find something
+            resolve(null);
+            // reject(err);
           }
         });
       });
