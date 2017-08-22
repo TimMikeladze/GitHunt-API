@@ -45,7 +45,7 @@ export class GitHubConnector {
       if (cachedRes && cachedRes.eTag) {
         options.headers['If-None-Match'] = cachedRes.eTag;
       }
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         this.rp({
           uri: url,
           ...options,
@@ -63,7 +63,6 @@ export class GitHubConnector {
             // We need better error handling on the client, for now
             // just return null if GitHub can't find something
             resolve(null);
-            // reject(err);
           }
         });
       });
