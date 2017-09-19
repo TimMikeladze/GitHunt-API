@@ -19,7 +19,7 @@ export default {
       `,
       caches: [
         {
-          ttl: 600,
+          ttl: 300000,
           store: 'standardCache',
         },
       ],
