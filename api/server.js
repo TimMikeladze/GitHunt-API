@@ -4,11 +4,9 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
-
 import OpticsAgent from 'optics-agent';
 import { Engine } from 'apollo-engine';
 import compression from 'compression';
-
 import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
 import { createServer } from 'http';
@@ -29,7 +27,6 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 import engineConfig from './engineConfig';
-
 
 const WS_GQL_PATH = '/subscriptions';
 
@@ -68,7 +65,6 @@ export function run({
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-
 
   const invertedMap = invert(queryMap);
 
