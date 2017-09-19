@@ -55,7 +55,7 @@ export function run({
     const fullEngineConfig = Object.assign({}, engineConfig, { apiKey: ENGINE_API_KEY });
     const engine = new Engine({
       engineConfig: fullEngineConfig,
-      graphqlPort: portFromEnv,
+      graphqlPort: port,
     });
     engine.start();
     app.use(engine.expressMiddleware());
