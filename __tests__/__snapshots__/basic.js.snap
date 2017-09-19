@@ -4,62 +4,341 @@ exports[`accepts a query 1`] = `
 Object {
   "data": Object {
     "feed": Array [
-      Object {
-        "postedBy": Object {
-          "login": "stubailo",
-        },
-        "repository": Object {
-          "name": "apollo-client",
-          "owner": Object {
-            "login": "apollographql",
-          },
-        },
-      },
-      Object {
-        "postedBy": Object {
-          "login": "helfer",
-        },
-        "repository": Object {
-          "name": "graphql-server",
-          "owner": Object {
-            "login": "apollographql",
-          },
-        },
-      },
-      Object {
-        "postedBy": Object {
-          "login": "tmeasday",
-        },
-        "repository": Object {
-          "name": "meteor",
-          "owner": Object {
-            "login": "meteor",
-          },
-        },
-      },
-      Object {
-        "postedBy": Object {
-          "login": "Slava",
-        },
-        "repository": Object {
-          "name": "bootstrap",
-          "owner": Object {
-            "login": "twbs",
-          },
-        },
-      },
-      Object {
-        "postedBy": Object {
-          "login": "Slava",
-        },
-        "repository": Object {
-          "name": "d3",
-          "owner": Object {
-            "login": "d3",
-          },
-        },
-      },
+      null,
+      null,
+      null,
+      null,
+      null,
     ],
+  },
+  "errors": Array [
+    Object {
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 4,
+        },
+      ],
+      "message": "[2mexpect([22m[31mreceived[39m[2m).toEqual([22m[32mexpected[39m[2m)[22m
+
+Expected value to equal:
+  [32m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/apollographql/apollo-client\\"}[39m
+Received:
+  [31m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"qs\\": {\\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\", \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\"}, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/apollographql/apollo-client\\"}[39m
+
+Difference:
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m Object {[22m
+[2m   \\"headers\\": Object {[22m
+[2m     \\"user-agent\\": \\"GitHunt\\",[22m
+[2m   },[22m
+[2m   \\"json\\": true,[22m
+[31m+  \\"qs\\": Object {[39m
+[31m+    \\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\",[39m
+[31m+    \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\",[39m
+[31m+  },[39m
+[2m   \\"resolveWithFullResponse\\": true,[22m
+[2m   \\"uri\\": \\"https://api.github.com/repos/apollographql/apollo-client\\",[22m
+[2m }[22m",
+      "path": Array [
+        "feed",
+        0,
+        "repository",
+      ],
+    },
+    Object {
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 4,
+        },
+      ],
+      "message": "[2mexpect([22m[31mreceived[39m[2m).toEqual([22m[32mexpected[39m[2m)[22m
+
+Expected value to equal:
+  [32m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/apollographql/graphql-server\\"}[39m
+Received:
+  [31m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"qs\\": {\\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\", \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\"}, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/apollographql/graphql-server\\"}[39m
+
+Difference:
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m Object {[22m
+[2m   \\"headers\\": Object {[22m
+[2m     \\"user-agent\\": \\"GitHunt\\",[22m
+[2m   },[22m
+[2m   \\"json\\": true,[22m
+[31m+  \\"qs\\": Object {[39m
+[31m+    \\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\",[39m
+[31m+    \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\",[39m
+[31m+  },[39m
+[2m   \\"resolveWithFullResponse\\": true,[22m
+[2m   \\"uri\\": \\"https://api.github.com/repos/apollographql/graphql-server\\",[22m
+[2m }[22m",
+      "path": Array [
+        "feed",
+        1,
+        "repository",
+      ],
+    },
+    Object {
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 4,
+        },
+      ],
+      "message": "[2mexpect([22m[31mreceived[39m[2m).toEqual([22m[32mexpected[39m[2m)[22m
+
+Expected value to equal:
+  [32m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/meteor/meteor\\"}[39m
+Received:
+  [31m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"qs\\": {\\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\", \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\"}, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/meteor/meteor\\"}[39m
+
+Difference:
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m Object {[22m
+[2m   \\"headers\\": Object {[22m
+[2m     \\"user-agent\\": \\"GitHunt\\",[22m
+[2m   },[22m
+[2m   \\"json\\": true,[22m
+[31m+  \\"qs\\": Object {[39m
+[31m+    \\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\",[39m
+[31m+    \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\",[39m
+[31m+  },[39m
+[2m   \\"resolveWithFullResponse\\": true,[22m
+[2m   \\"uri\\": \\"https://api.github.com/repos/meteor/meteor\\",[22m
+[2m }[22m",
+      "path": Array [
+        "feed",
+        2,
+        "repository",
+      ],
+    },
+    Object {
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 4,
+        },
+      ],
+      "message": "[2mexpect([22m[31mreceived[39m[2m).toEqual([22m[32mexpected[39m[2m)[22m
+
+Expected value to equal:
+  [32m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/twbs/bootstrap\\"}[39m
+Received:
+  [31m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"qs\\": {\\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\", \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\"}, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/repos/twbs/bootstrap\\"}[39m
+
+Difference:
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m Object {[22m
+[2m   \\"headers\\": Object {[22m
+[2m     \\"user-agent\\": \\"GitHunt\\",[22m
+[2m   },[22m
+[2m   \\"json\\": true,[22m
+[31m+  \\"qs\\": Object {[39m
+[31m+    \\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\",[39m
+[31m+    \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\",[39m
+[31m+  },[39m
+[2m   \\"resolveWithFullResponse\\": true,[22m
+[2m   \\"uri\\": \\"https://api.github.com/repos/twbs/bootstrap\\",[22m
+[2m }[22m",
+      "path": Array [
+        "feed",
+        3,
+        "repository",
+      ],
+    },
+    Object {
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 9,
+        },
+      ],
+      "message": "[2mexpect([22m[31mreceived[39m[2m).toEqual([22m[32mexpected[39m[2m)[22m
+
+Expected value to equal:
+  [32m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/users/Slava\\"}[39m
+Received:
+  [31m{\\"headers\\": {\\"user-agent\\": \\"GitHunt\\"}, \\"json\\": true, \\"qs\\": {\\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\", \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\"}, \\"resolveWithFullResponse\\": true, \\"uri\\": \\"https://api.github.com/users/Slava\\"}[39m
+
+Difference:
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m Object {[22m
+[2m   \\"headers\\": Object {[22m
+[2m     \\"user-agent\\": \\"GitHunt\\",[22m
+[2m   },[22m
+[2m   \\"json\\": true,[22m
+[31m+  \\"qs\\": Object {[39m
+[31m+    \\"client_id\\": \\"c6bc0f4f8a4bd4834e8c\\",[39m
+[31m+    \\"client_secret\\": \\"005ca20e6be466560d3cc9d4f4cd4253977cded5\\",[39m
+[31m+  },[39m
+[2m   \\"resolveWithFullResponse\\": true,[22m
+[2m   \\"uri\\": \\"https://api.github.com/users/Slava\\",[22m
+[2m }[22m",
+      "path": Array [
+        "feed",
+        4,
+        "postedBy",
+      ],
+    },
+  ],
+  "extensions": Object {
+    "tracing": Object {
+      "duration": 59356000,
+      "endTime": "2017-09-19T20:32:42.924Z",
+      "execution": Object {
+        "resolvers": Array [
+          Object {
+            "duration": 5537000,
+            "fieldName": "feed",
+            "parentType": "Query",
+            "path": Array [
+              "feed",
+            ],
+            "returnType": "[Entry]",
+            "startOffset": 10144000,
+          },
+          Object {
+            "duration": 41265000,
+            "fieldName": "repository",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              0,
+              "repository",
+            ],
+            "returnType": "Repository!",
+            "startOffset": 16398000,
+          },
+          Object {
+            "duration": 23043000,
+            "fieldName": "postedBy",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              0,
+              "postedBy",
+            ],
+            "returnType": "User!",
+            "startOffset": 34625000,
+          },
+          Object {
+            "duration": 20265000,
+            "fieldName": "repository",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              1,
+              "repository",
+            ],
+            "returnType": "Repository!",
+            "startOffset": 37405000,
+          },
+          Object {
+            "duration": 18345000,
+            "fieldName": "postedBy",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              1,
+              "postedBy",
+            ],
+            "returnType": "User!",
+            "startOffset": 39326000,
+          },
+          Object {
+            "duration": 14871000,
+            "fieldName": "repository",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              2,
+              "repository",
+            ],
+            "returnType": "Repository!",
+            "startOffset": 42801000,
+          },
+          Object {
+            "duration": 11820000,
+            "fieldName": "postedBy",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              2,
+              "postedBy",
+            ],
+            "returnType": "User!",
+            "startOffset": 45853000,
+          },
+          Object {
+            "duration": 7675000,
+            "fieldName": "repository",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              3,
+              "repository",
+            ],
+            "returnType": "Repository!",
+            "startOffset": 49999000,
+          },
+          Object {
+            "duration": 5340000,
+            "fieldName": "postedBy",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              3,
+              "postedBy",
+            ],
+            "returnType": "User!",
+            "startOffset": 52335000,
+          },
+          Object {
+            "duration": 2692000,
+            "fieldName": "repository",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              4,
+              "repository",
+            ],
+            "returnType": "Repository!",
+            "startOffset": 54985000,
+          },
+          Object {
+            "duration": 478000,
+            "fieldName": "postedBy",
+            "parentType": "Entry",
+            "path": Array [
+              "feed",
+              4,
+              "postedBy",
+            ],
+            "returnType": "User!",
+            "startOffset": 57198000,
+          },
+        ],
+      },
+      "startTime": "2017-09-19T20:32:42.865Z",
+      "version": 1,
+    },
   },
 }
 `;
