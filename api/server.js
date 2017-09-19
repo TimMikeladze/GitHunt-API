@@ -3,8 +3,10 @@ import express from 'express';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import OpticsAgent from 'optics-agent';
+import { Engine } from 'apollo-engine';
+import compression from 'compression';
 import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
 import { createServer } from 'http';
@@ -24,12 +26,14 @@ import { Entries, Comments } from './sql/models';
 import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
+import engineConfig from './engineConfig';
 
 const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
                       OPTICS_API_KEY,
+                      ENGINE_API_KEY,
                       PORT: portFromEnv = 3010,
                     } = {}) {
   if (OPTICS_API_KEY) {
@@ -46,6 +50,17 @@ export function run({
     : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
+
+  if (ENGINE_API_KEY) {
+    const fullEngineConfig = Object.assign({}, engineConfig, { apiKey: ENGINE_API_KEY });
+    const engine = new Engine({
+      engineConfig: fullEngineConfig,
+      graphqlPort: port,
+    });
+    engine.start();
+    app.use(engine.expressMiddleware());
+  }
+  app.use(compression());
 
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -109,6 +124,7 @@ export function run({
 
     return {
       schema,
+      tracing: true,
       context: {
         user,
         Repositories: new Repositories({ connector: gitHubConnector }),
