@@ -52,7 +52,12 @@ export function run({
   const app = express();
 
   if (ENGINE_API_KEY) {
-    const fullEngineConfig = Object.assign({}, engineConfig, { apiKey: ENGINE_API_KEY });
+    const fullEngineConfig = Object.assign({}, engineConfig, {
+      apiKey: ENGINE_API_KEY,
+      logcfg: {
+        level: 'DEBUG',
+      },
+    });
     const engine = new Engine({
       engineConfig: fullEngineConfig,
       graphqlPort: port,
