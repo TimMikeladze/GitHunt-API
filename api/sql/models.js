@@ -20,11 +20,12 @@ function handleNullScoreInRow({ score, ...rest }) {
 
 // Given a Knex query promise, resolve it and then format one or more rows
 function formatRows(query) {
-  return query.then((rows) => {
-    if (rows.map) {
+  return query.then((rows) => { // eslint-disable-line consistent-return
+    if (rows && rows.map) {
       return rows.map(handleNullScoreInRow);
+    } else if (rows) {
+      return handleNullScoreInRow(rows);
     }
-    return handleNullScoreInRow(rows);
   });
 }
 

@@ -118,8 +118,18 @@ const rootResolvers = {
       return Promise.resolve()
         .then(() => (
           context.Repositories.getByFullName(repoFullName)
-            .catch(() => {
-              throw new Error(`Couldn't find repository named "${repoFullName}"`);
+            .then((res) => {
+              if (!res) {
+                throw new Error(`Couldn't find repository named "${repoFullName}"`);
+              }
+            })
+        ))
+        .then(() => (
+          context.Entries.getByRepoFullName(repoFullName)
+            .then((res) => {
+              if (res) {
+                throw new Error('This repository has already been added.');
+              }
             })
         ))
         .then(() => (
