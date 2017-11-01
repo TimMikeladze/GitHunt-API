@@ -1,9 +1,9 @@
 export default {
   stores: [
     {
-      name: "standardCache",
+      name: 'standardCache',
       epoch: 1,
-      timeout: "1s",
+      timeout: '1s',
     },
   ],
   operations: [
@@ -58,7 +58,7 @@ export default {
       caches: [
         {
           ttl: 60000,
-          store: "standardCache",
+          store: 'standardCache',
         },
       ],
     },

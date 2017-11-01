@@ -98,34 +98,34 @@ export function seed(knex, Promise) {
   ])
 
   // Insert some entries for the repositories
-  .then(() => {
-    return Promise.all(repos.map(({ repository_name, posted_by }, i) => {
-      const createdAt = new Date(Date.now() - (i * 10000));
-      const repoVotes = votes[repository_name];
-      const hotScore = hot(repoVotes, createdAt);
+    .then(() => {
+      return Promise.all(repos.map(({ repository_name, posted_by }, i) => {
+        const createdAt = new Date(Date.now() - (i * 10000));
+        const repoVotes = votes[repository_name];
+        const hotScore = hot(repoVotes, createdAt);
 
-      return knex('entries').insert({
-        created_at: createdAt,
-        updated_at: createdAt,
-        repository_name,
-        posted_by,
-        hot_score: hotScore,
-      }).returning('id').then(([id]) => {
-        repoIds[repository_name] = id;
-      });
-    }));
-  })
-
-  // Insert some votes so that we can render a sorted feed
-  .then(() => {
-    return Promise.all(_.toPairs(votes).map(([repoName, voteMap]) => {
-      return Promise.all(_.toPairs(voteMap).map(([username, vote_value]) => {
-        return knex('votes').insert({
-          entry_id: repoIds[repoName],
-          vote_value,
-          username,
+        return knex('entries').insert({
+          created_at: createdAt,
+          updated_at: createdAt,
+          repository_name,
+          posted_by,
+          hot_score: hotScore,
+        }).returning('id').then(([id]) => {
+          repoIds[repository_name] = id;
         });
       }));
-    }));
-  });
+    })
+
+  // Insert some votes so that we can render a sorted feed
+    .then(() => {
+      return Promise.all(_.toPairs(votes).map(([repoName, voteMap]) => {
+        return Promise.all(_.toPairs(voteMap).map(([username, vote_value]) => {
+          return knex('votes').insert({
+            entry_id: repoIds[repoName],
+            vote_value,
+            username,
+          });
+        }));
+      }));
+    });
 }

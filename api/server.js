@@ -32,10 +32,10 @@ const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
-                      OPTICS_API_KEY,
-                      ENGINE_API_KEY,
-                      PORT: portFromEnv = 3010,
-                    } = {}) {
+  OPTICS_API_KEY,
+  ENGINE_API_KEY,
+  PORT: portFromEnv = 3010,
+} = {}) {
   if (OPTICS_API_KEY) {
     OpticsAgent.instrumentSchema(schema);
   }
@@ -183,7 +183,7 @@ export function run({
           if (!config.persistedQueries) {
             // Get the query, the same way express-graphql does it
             // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
-            const query = params.query;
+            const { query } = params;
             if (query && query.length > 2000) {
               // None of our app's queries are this long
               // Probably indicates someone trying to send an overly expensive query
