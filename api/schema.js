@@ -93,16 +93,19 @@ const COMMENT_ADDED_TOPIC = 'commentAdded';
 
 const rootResolvers = {
   Query: {
-    feed(root, { type, offset, limit }, context) {
+    feed(root, { type, offset, limit }, context, { cacheControl }) {
       // Ensure API consumer can only fetch 20 items at most
+      cacheControl.setCacheHint({ maxAge: 60 });
       const protectedLimit = (limit < 1 || limit > 20) ? 20 : limit;
 
       return context.Entries.getForFeed(type, offset, protectedLimit);
     },
-    entry(root, { repoFullName }, context) {
+    entry(root, { repoFullName }, context, { cacheControl }) {
+      cacheControl.setCacheHint({ maxAge: 60 });
       return context.Entries.getByRepoFullName(repoFullName);
     },
-    currentUser(root, args, context) {
+    currentUser(root, args, context,  { cacheControl }) {
+      cacheControl.setCacheHint({ maxAge: 60 });
       return context.user || null;
     },
   },
