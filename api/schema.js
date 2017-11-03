@@ -20,7 +20,7 @@ enum FeedType {
   TOP
 }
 
-type Query {
+type Query @cacheControl(maxAge:240) {
   # A feed of repository submissions
   feed(
     # The sort order for the feed
