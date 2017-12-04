@@ -45,43 +45,25 @@ export function run({
     port = parseInt(portFromEnv, 10);
   }
 
-  console.log(ENGINE_API_KEY);
-
-  const engine = new Engine({ engineConfig: {
-    apiKey: ENGINE_API_KEY },
-    graphqlPort: port,
-    stores: [
-      {
-        name: 'standardCache',
-        timeout: '1s',
-        memcaches: [
-          {
-            url: 'localhost:11211',
-          },
-        ],
-      },
-    ],
-    operations: [
-      {
-      // help!
-        signature: '{hero{name}}',
-        caches: [
-          {
-            ttl: 600,
-            store: 'standardCache',
-          },
-        ],
-      },
-    ],
-    sessionAuth: {
-      store: 'standardCache',
-      header: 'X-AUTH-TOKEN',
-    // help!
-      tokenAuthUrl: 'http://session-server.com/auth-path',
-    },
-  });
-
-  engine.start();
+  let engine;
+  if (ENGINE_API_KEY) {
+    const engine = new Engine({ engineConfig: {
+      apiKey: ENGINE_API_KEY },
+      graphqlPort: port,
+      stores: [
+        {
+          name: 'standardCache',
+          timeout: '1s',
+          memcaches: [
+            {
+              url: 'localhost:11211',
+            },
+          ],
+        },
+      ]
+    });
+    engine.start();
+  }
 
   const wsGqlURL = process.env.NODE_ENV !== 'production'
     ? `ws://localhost:${port}${WS_GQL_PATH}`
@@ -89,7 +71,9 @@ export function run({
 
   const app = express();
 
-  app.use(engine.expressMiddleware());
+  if (ENGINE_API_KEY) {
+    app.use(engine.expressMiddleware());
+  }
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
