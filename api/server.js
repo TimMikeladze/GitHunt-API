@@ -45,33 +45,43 @@ export function run({
     port = parseInt(portFromEnv, 10);
   }
 
-  let engine;
-  if (ENGINE_API_KEY) {
-    const engine = new Engine({ engineConfig: {
-      apiKey: ENGINE_API_KEY },
-      graphqlPort: port,
-      stores: [
-        {
-          name: 'standardCache',
-          timeout: '1s',
-          memcaches: [
-            {
-              url: 'localhost:11211',
-            },
-          ],
-        },
-      ]
-    });
-    engine.start();
-  }
-
   const wsGqlURL = process.env.NODE_ENV !== 'production'
-    ? `ws://localhost:${port}${WS_GQL_PATH}`
-    : `ws://api.githunt.com${WS_GQL_PATH}`;
+  ? `ws://localhost:${port}${WS_GQL_PATH}`
+  : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
 
   if (ENGINE_API_KEY) {
+    const engine = new Engine({ 
+      engineConfig: {
+        apiKey: ENGINE_API_KEY,
+        stores: [
+          {
+            name: "embeddedCache",
+            inMemory: {
+              cacheSize: 10485760
+            }
+          }
+        ],
+        sessionAuth: {
+          store: "embeddedCache",
+          header: "Authorization"
+        },
+        queryCache: {
+          publicFullQueryStore: "embeddedCache",
+          privateFullQueryStore: "embeddedCache"
+        },
+        reporting: {
+          endpointUrl: "https://engine-report.apollographql.com",
+          debugReports: true
+        },
+        logging: {
+          level: "DEBUG"
+        }
+      },
+      graphqlPort: port
+    });
+    engine.start();
     app.use(engine.expressMiddleware());
   }
   app.use(cors());
