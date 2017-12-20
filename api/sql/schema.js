@@ -3,7 +3,7 @@ import { property, constant } from 'lodash';
 export const schema = [`
 
 # A comment about an entry, submitted by a user
-type Comment {
+type Comment @cacheControl(maxAge:240){
   # The SQL ID of this entry
   id: Int!
 
@@ -26,7 +26,7 @@ type Vote {
 }
 
 # Information about a GitHub repository submitted to GitHunt
-type Entry {
+type Entry @cacheControl(maxAge:240) {
   # Information about the repository from GitHub
   repository: Repository
 
