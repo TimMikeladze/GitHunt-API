@@ -3,7 +3,7 @@ import { property } from 'lodash';
 export const schema = [`
 # A repository object from the GitHub API. This uses the exact field names returned by the
 # GitHub API for simplicity, even though the convention for GraphQL is usually to camel case.
-type Repository {
+type Repository @cacheControl(maxAge:240){
   # Just the name of the repository, e.g. GitHunt-API
   name: String!
 
@@ -27,7 +27,7 @@ type Repository {
 }
 
 # A user object from the GitHub API. This uses the exact field names returned from the GitHub API.
-type User {
+type User @cacheControl(maxAge:240){
   # The name of the user, e.g. apollostack
   login: String!
 
