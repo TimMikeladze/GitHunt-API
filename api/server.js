@@ -10,7 +10,7 @@ import { invert, isString } from 'lodash';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
-
+import { Engine } from 'apollo-engine';
 import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
@@ -25,16 +25,14 @@ import schema from './schema';
 import queryMap from '../extracted_queries.json';
 import config from './config';
 
-import { Engine } from 'apollo-engine';
-
 const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
-                      OPTICS_API_KEY,
-                      ENGINE_API_KEY,
-                      PORT: portFromEnv = 3010,
-                    } = {}) {
+  OPTICS_API_KEY,
+  ENGINE_API_KEY,
+  PORT: portFromEnv = 3010,
+} = {}) {
   if (OPTICS_API_KEY) {
     OpticsAgent.instrumentSchema(schema);
   }
@@ -46,39 +44,39 @@ export function run({
   }
 
   const wsGqlURL = process.env.NODE_ENV !== 'production'
-  ? `ws://localhost:${port}${WS_GQL_PATH}`
-  : `ws://api.githunt.com${WS_GQL_PATH}`;
+    ? `ws://localhost:${port}${WS_GQL_PATH}`
+    : `ws://api.githunt.com${WS_GQL_PATH}`;
 
   const app = express();
 
   if (ENGINE_API_KEY) {
-    const engine = new Engine({ 
+    const engine = new Engine({
       engineConfig: {
         apiKey: ENGINE_API_KEY,
         stores: [
           {
-            name: "embeddedCache",
+            name: 'embeddedCache',
             inMemory: {
-              cacheSize: 10485760
-            }
-          }
+              cacheSize: 10485760,
+            },
+          },
         ],
         sessionAuth: {
-          store: "embeddedCache",
-          header: "Authorization"
+          store: 'embeddedCache',
+          header: 'Authorization',
         },
         queryCache: {
-          publicFullQueryStore: "embeddedCache",
-          privateFullQueryStore: "embeddedCache"
+          publicFullQueryStore: 'embeddedCache',
+          privateFullQueryStore: 'embeddedCache',
         },
         reporting: {
-          debugReports: true
+          debugReports: true,
         },
         logging: {
-          level: "DEBUG"
-        }
+          level: 'DEBUG',
+        },
       },
-      graphqlPort: port
+      graphqlPort: port,
     });
     engine.start();
     app.use(engine.expressMiddleware());
@@ -200,7 +198,7 @@ export function run({
           if (!config.persistedQueries) {
             // Get the query, the same way express-graphql does it
             // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
-            const query = params.query;
+            const { query } = params;
             if (query && query.length > 2000) {
               // None of our app's queries are this long
               // Probably indicates someone trying to send an overly expensive query
