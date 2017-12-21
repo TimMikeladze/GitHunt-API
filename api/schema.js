@@ -104,7 +104,7 @@ const rootResolvers = {
       cacheControl.setCacheHint({ maxAge: 60 });
       return context.Entries.getByRepoFullName(repoFullName);
     },
-    currentUser(root, args, context,  { cacheControl }) {
+    currentUser(root, args, context, { cacheControl }) {
       cacheControl.setCacheHint({ maxAge: 60 });
       return context.user || null;
     },
