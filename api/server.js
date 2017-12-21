@@ -72,7 +72,6 @@ export function run({
           privateFullQueryStore: "embeddedCache"
         },
         reporting: {
-          endpointUrl: "https://engine-report.apollographql.com",
           debugReports: true
         },
         logging: {
