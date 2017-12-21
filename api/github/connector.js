@@ -50,7 +50,7 @@ export class GitHubConnector {
           uri: url,
           ...options,
         }).then((response) => {
-          const body = { response };
+          const { body } = response;
           eTagCache[url] = {
             result: body,
             eTag: response.headers.etag,
