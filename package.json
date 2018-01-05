@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "apollo-cache-control": "0.0.7",
-    "apollo-engine": "^0.6.0",
+    "apollo-engine": "^0.8.1",
     "apollo-server-express": "^1.2.0",
     "babel-cli": "6.26.0",
     "babel-core": "6.26.0",
