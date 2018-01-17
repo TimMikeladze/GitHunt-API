@@ -4,7 +4,6 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
-import OpticsAgent from 'optics-agent';
 import bodyParser from 'body-parser';
 import { invert, isString } from 'lodash';
 import { createServer } from 'http';
@@ -29,14 +28,9 @@ const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({
-  OPTICS_API_KEY,
   ENGINE_API_KEY,
   PORT: portFromEnv = 3010,
 } = {}) {
-  if (OPTICS_API_KEY) {
-    OpticsAgent.instrumentSchema(schema);
-  }
-
   let port = portFromEnv;
 
   if (isString(portFromEnv)) {
@@ -101,10 +95,6 @@ export function run({
   const sessionStore = setUpGitHubLogin(app);
   app.use(cookieParser(config.sessionStoreSecret));
 
-  if (OPTICS_API_KEY) {
-    app.use('/graphql', OpticsAgent.middleware());
-  }
-
   app.use('/graphql', graphqlExpress((req) => {
     if (!config.persistedQueries) {
       // Get the query, the same way express-graphql does it
@@ -136,11 +126,6 @@ export function run({
       clientSecret: GITHUB_CLIENT_SECRET,
     });
 
-    let opticsContext;
-    if (OPTICS_API_KEY) {
-      opticsContext = OpticsAgent.context(req);
-    }
-
     return {
       schema,
       tracing: true,
@@ -150,8 +135,7 @@ export function run({
         Repositories: new Repositories({ connector: gitHubConnector }),
         Users: new Users({ connector: gitHubConnector }),
         Entries: new Entries(),
-        Comments: new Comments(),
-        opticsContext,
+        Comments: new Comments()
       },
     };
   }));
@@ -217,11 +201,6 @@ export function run({
             params.query = invertedMap[msg.payload.id];
           }
 
-          let opticsContext;
-          if (OPTICS_API_KEY) {
-            opticsContext = OpticsAgent.context(socket.upgradeReq);
-          }
-
           let wsSessionUser = null;
           if (socket.upgradeReq) {
             const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
@@ -232,8 +211,7 @@ export function run({
                 Repositories: new Repositories({ connector: gitHubConnector }),
                 Users: new Users({ connector: gitHubConnector }),
                 Entries: new Entries(),
-                Comments: new Comments(),
-                opticsContext,
+                Comments: new Comments()
               },
             };
 
