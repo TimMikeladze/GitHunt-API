@@ -56,6 +56,9 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
             },
           },
         ],
+        persistedQueries: {
+          store: 'pq',
+        },
         sessionAuth: {
           store: 'embeddedCache',
           header: 'Authorization',
