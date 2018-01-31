@@ -1,27 +1,27 @@
-import path from "path";
-import express from "express";
-import cookie from "cookie";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import { graphqlExpress, graphiqlExpress } from "apollo-server-express";
-import bodyParser from "body-parser";
-import { invert, isString } from "lodash";
-import { createServer } from "http";
-import { SubscriptionServer } from "subscriptions-transport-ws";
-import { execute, subscribe } from "graphql";
-import { Engine } from "apollo-engine";
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "./githubKeys";
+import path from 'path';
+import express from 'express';
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import bodyParser from 'body-parser';
+import { invert, isString } from 'lodash';
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
+import { Engine } from 'apollo-engine';
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from './githubKeys';
 
-import { setUpGitHubLogin } from "./githubLogin";
-import { GitHubConnector } from "./github/connector";
-import { Repositories, Users } from "./github/models";
-import { Entries, Comments } from "./sql/models";
+import { setUpGitHubLogin } from './githubLogin';
+import { GitHubConnector } from './github/connector';
+import { Repositories, Users } from './github/models';
+import { Entries, Comments } from './sql/models';
 
-import schema from "./schema";
-import queryMap from "../extracted_queries.json";
-import config from "./config";
+import schema from './schema';
+import queryMap from '../extracted_queries.json';
+import config from './config';
 
-const WS_GQL_PATH = "/subscriptions";
+const WS_GQL_PATH = '/subscriptions';
 
 // Arguments usually come from env vars
 export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
@@ -32,7 +32,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
   }
 
   const wsGqlURL =
-    process.env.NODE_ENV !== "production"
+    process.env.NODE_ENV !== 'production'
       ? `ws://localhost:${port}${WS_GQL_PATH}`
       : `ws://api.githunt.com${WS_GQL_PATH}`;
 
@@ -44,31 +44,31 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
         apiKey: ENGINE_API_KEY,
         stores: [
           {
-            name: "embeddedCache",
+            name: 'embeddedCache',
             inMemory: {
               cacheSize: 10485760,
             },
           },
           {
-            name: "pq",
+            name: 'pq',
             inMemory: {
-              cacheSize: "5000000",
+              cacheSize: 5000000,
             },
           },
         ],
         sessionAuth: {
-          store: "embeddedCache",
-          header: "Authorization",
+          store: 'embeddedCache',
+          header: 'Authorization',
         },
         queryCache: {
-          publicFullQueryStore: "embeddedCache",
-          privateFullQueryStore: "embeddedCache",
+          publicFullQueryStore: 'embeddedCache',
+          privateFullQueryStore: 'embeddedCache',
         },
         reporting: {
           debugReports: true,
         },
         logging: {
-          level: "DEBUG",
+          level: 'DEBUG',
         },
       },
       graphqlPort: port,
@@ -82,7 +82,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
 
   const invertedMap = invert(queryMap);
 
-  app.use("/graphql", (req, resp, next) => {
+  app.use('/graphql', (req, resp, next) => {
     if (config.persistedQueries) {
       // eslint-disable-next-line no-param-reassign
       req.body.query = invertedMap[req.body.id];
@@ -94,8 +94,8 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
   app.use(cookieParser(config.sessionStoreSecret));
 
   app.use(
-    "/graphql",
-    graphqlExpress(req => {
+    '/graphql',
+    graphqlExpress((req) => {
       if (!config.persistedQueries) {
         // Get the query, the same way express-graphql does it
         // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
@@ -103,7 +103,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
         if (query && query.length > 2000) {
           // None of our app's queries are this long
           // Probably indicates someone trying to send an overly expensive query
-          throw new Error("Query too large.");
+          throw new Error('Query too large.');
         }
       }
 
@@ -138,13 +138,13 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
           Comments: new Comments(),
         },
       };
-    })
+    }),
   );
 
   app.use(
-    "/graphiql",
+    '/graphiql',
     graphiqlExpress({
-      endpointURL: "/graphql",
+      endpointURL: '/graphql',
       subscriptionsEndpoint: wsGqlURL,
       query: `{
     feed (type: NEW, limit: 5) {
@@ -157,21 +157,19 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
     }
   }
   `,
-    })
+    }),
   );
 
   // Serve our helpful static landing page. Not used in production.
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
   });
 
   const server = createServer(app);
 
   server.listen(port, () => {
     console.log(`API Server is now running on http://localhost:${port}`); // eslint-disable-line no-console
-    console.log(
-      `API Server over web socket with subscriptions is now running on ws://localhost:${port}${WS_GQL_PATH}`
-    ); // eslint-disable-line no-console
+    console.log(`API Server over web socket with subscriptions is now running on ws://localhost:${port}${WS_GQL_PATH}`); // eslint-disable-line no-console
   });
 
   // eslint-disable-next-line
@@ -184,7 +182,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
       // the onOperation function is called for every new operation
       // and we use it to set the GraphQL context for this operation
       onOperation: (msg, params, socket) => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           if (!config.persistedQueries) {
             // Get the query, the same way express-graphql does it
             // https://github.com/graphql/express-graphql/blob/3fa6e68582d6d933d37fa9e841da5d2aa39261cd/src/index.js#L257
@@ -192,7 +190,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
             if (query && query.length > 2000) {
               // None of our app's queries are this long
               // Probably indicates someone trying to send an overly expensive query
-              throw new Error("Query too large.");
+              throw new Error('Query too large.');
             }
           }
 
@@ -211,8 +209,8 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
           if (socket.upgradeReq) {
             const cookies = cookie.parse(socket.upgradeReq.headers.cookie);
             const sessionID = cookieParser.signedCookie(
-              cookies["connect.sid"],
-              config.sessionStoreSecret
+              cookies['connect.sid'],
+              config.sessionStoreSecret,
             );
 
             const baseContext = {
@@ -227,7 +225,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
             const paramsWithFulfilledBaseContext = Object.assign(
               {},
               params,
-              baseContext
+              baseContext,
             );
 
             if (!sessionID) {
@@ -239,9 +237,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
             // get the session object
             sessionStore.get(sessionID, (err, session) => {
               if (err) {
-                throw new Error(
-                  "Failed retrieving sessionID from the sessionStore."
-                );
+                throw new Error('Failed retrieving sessionID from the sessionStore.');
               }
 
               if (session && session.passport && session.passport.user) {
@@ -252,16 +248,14 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
                   avatar_url: sessionUser.photos[0].value,
                 };
 
-                resolve(
-                  Object.assign(paramsWithFulfilledBaseContext, {
-                    context: Object.assign(
-                      paramsWithFulfilledBaseContext.context,
-                      {
-                        user: wsSessionUser,
-                      }
-                    ),
-                  })
-                );
+                resolve(Object.assign(paramsWithFulfilledBaseContext, {
+                  context: Object.assign(
+                    paramsWithFulfilledBaseContext.context,
+                    {
+                      user: wsSessionUser,
+                    },
+                  ),
+                }));
               }
 
               resolve(paramsWithFulfilledBaseContext);
@@ -273,7 +267,7 @@ export function run({ ENGINE_API_KEY, PORT: portFromEnv = 3010 } = {}) {
     {
       path: WS_GQL_PATH,
       server,
-    }
+    },
   );
 
   return server;
